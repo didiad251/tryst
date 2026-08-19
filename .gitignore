@@ -1,0 +1,17 @@
+.DS_Store
+*.log
+*.tmp
+
+# Local WebView runtime cache.
+BTMOB_V4.5.5BXB33/BTMob.exe.WebView2/
+
+# Runtime customer/device history. These files can contain IPs, names, and IDs.
+BTMOB_V4.5.5BXB33/Resources/USERS/
+
+# Generated cache/temp resource files.
+BTMOB_V4.5.5BXB33/Resources/BTCache/
+BTMOB_V4.5.5BXB33/Resources/Store/temp/
+
+# Local binary/HTML backups created during patching.
+*.bak*
+*.bak_*

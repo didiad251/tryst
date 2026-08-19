@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blocked Clients</title>
+
+    <style>
+        :root {
+            --bg: #060a0f;
+            --panel: #0e1621;
+            --muted: #91a3b6;
+            --text: #e6edf3;
+            --accent: #02b075;
+            --accent-2: #26d8a7;
+            --danger: #e21014;
+            --border: #1a2533;
+            --radius: 14px;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        /* GENERAL */
+        body {
+            margin: 0;
+            padding: 5px;
+            background: var(--bg);
+            color: var(--text);
+            overflow: hidden;
+            font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+        }
+
+        .wrap {
+            background: transparent;
+            padding: 5px;
+            border-radius: var(--radius);
+        }
+
+        *::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        *::-webkit-scrollbar-thumb {
+            background: linear-gradient(var(--accent), var(--accent-2));
+            border-radius: 8px;
+        }
+
+        /* HEADER */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 6px;
+            padding: 4px 4px 8px;
+        }
+
+        .title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            background: linear-gradient(120deg, var(--accent), var(--accent-2));
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .leftside {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+
+        .logo {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            display: grid;
+            place-items: center;
+            background: conic-gradient(from 220deg at 50% 50%, rgba(2, 176, 117, 0.25), rgba(38, 216, 167, 0.15), rgba(2, 176, 117, 0.25));
+            border: 1px solid rgba(7, 197, 133, 0.45);
+        }
+
+        /* SEARCH BOX */
+        .searchbox {
+            position: relative;
+        }
+
+            .searchbox input {
+                padding: 8px 34px;
+                background: rgba(12, 18, 32, 0.96);
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                border-radius: 999px;
+                color: #d5deea;
+                font-size: 0.85rem;
+                outline: none;
+                min-width: 210px;
+                box-shadow: 0 0 0 1px transparent;
+            }
+
+                .searchbox input:focus {
+                    border-color: var(--accent);
+                    background: rgba(12, 22, 40, 0.98);
+                    box-shadow: 0 0 0 1px rgba(7, 197, 133, 0.45), 0 0 24px rgba(7, 197, 133, 0.32);
+                    transform: translateY(-1px);
+                }
+
+            .searchbox svg {
+                position: absolute;
+                left: 10px;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 16px;
+                height: 16px;
+                fill: #7b8596;
+                pointer-events: none;
+            }
+
+        /* TOP ROWS */
+        .secondrow {
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        /* .thirdrow {
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
+            box-sizing: border-box;
+        } */
+
+        /* SERVER SWITCH (pills) */
+        .server-switch {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .server-pill {
+            position: relative;
+            padding: 6px 14px 6px 24px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: #0b1420;
+            color: var(--muted);
+            font-size: 0.78rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: 0.18s ease;
+            outline: none;
+        }
+
+            .server-pill::before {
+                content: "";
+                position: absolute;
+                left: 9px;
+                width: 8px;
+                height: 8px;
+                border-radius: 999px;
+                background: var(--pill-color, var(--accent-2));
+            }
+
+            .server-pill:hover {
+                color: var(--accent-2);
+                border-color: var(--accent-2);
+                box-shadow: 0 0 10px var(--accent-2);
+                background: #101a28;
+            }
+
+            .server-pill.active {
+                color: var(--accent-2);
+                border-color: var(--accent-2);
+                background: radial-gradient(circle at 0 0, rgba(38, 216, 167, 0.3), #0b1522);
+            }
+
+        /* .filter-summary {
+            font-size: 0.78rem;
+            color: var(--muted);
+            opacity: 0.9;
+        } */
+
+        /* BUTTONS */
+        .header-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .btn {
+            width: 130px;
+            height: 60px;
+            font-size: 10.5px;
+            font-weight: bold;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 4px;
+            color: var(--muted);
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+            .btn:hover {
+                color: var(--accent-2);
+                fill: var(--accent-2);
+                border-color: var(--accent-2);
+                box-shadow: 0 0 10px var(--accent-2);
+            }
+
+            .btn svg {
+                width: 18px;
+                height: 18px;
+            }
+
+        /* TABLE (BLOCK LIST) */
+        .log-table {
+            margin-top: 6px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: linear-gradient(145deg, #0d1722 0%, #0a1119 100%);
+            max-height: 65vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .log-header,
+        .log-row {
+            display: grid;
+            /* checkbox+avatar | name | ip | country | id(mobid/ip) | status */
+            grid-template-columns: 40px 2.0fr 1.6fr 1.4fr 1.4fr 1.0fr;
+            align-items: center;
+            gap: 18px;
+            padding: 8px 10px;
+            font-size: 0.78rem;
+        }
+
+        .log-header {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            background: rgba(6, 10, 15, 0.98);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--muted);
+            font-size: 0.7rem;
+        }
+
+        .log-body {
+            overflow-y: auto;
+        }
+
+        .log-row {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            cursor: default;
+            transition: 0.16s ease;
+        }
+
+            .log-row:last-child {
+                border-bottom: none;
+            }
+
+            .log-row:hover {
+                background: radial-gradient(circle at top left, rgba(38, 216, 167, 0.16), transparent 60%);
+            }
+
+        .log-select {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            width: 50px;
+            justify-content: flex-start;
+        }
+
+        .log-header-check {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .avatar {
+            width: 22px;
+            height: 22px;
+            border-radius: 999px;
+            object-fit: cover;
+            background: #050814;
+        }
+
+        .client-cell,
+        .ip-cell,
+        .country-cell,
+        .id-cell {
+            font-size: 0.78rem;
+            color: var(--muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .client-cell {
+            color: var(--accent-2);
+        }
+
+        .status-cell {
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .status-pill {
+            padding: 3px 8px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            font-size: 0.69rem;
+        }
+
+        .status-temp {
+            color: #fbbf24;
+            border-color: rgba(251, 191, 36, 0.7);
+            background: rgba(251, 191, 36, 0.06);
+        }
+
+        .status-perm {
+            color: #f97373;
+            border-color: rgba(248, 113, 113, 0.8);
+            background: rgba(248, 113, 113, 0.09);
+        }
+
+        /* SMALL CHECKBOX */
+        .checkbox-sm {
+            width: 16px;
+            height: 16px;
+            appearance: none;
+            background: #050814;
+            border: 1px solid #273449;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, transform 0.12s ease;
+            display: grid;
+            place-items: center;
+        }
+
+            .checkbox-sm::before {
+                content: "";
+                width: 10px;
+                height: 10px;
+                border-radius: 3px;
+                transform: scale(0);
+                transition: transform 0.18s ease;
+                background: linear-gradient(135deg, #00ffb0, #08c983);
+                box-shadow: 0 0 8px rgba(0, 255, 176, 0.6);
+            }
+
+            .checkbox-sm:checked {
+                border-color: rgba(0, 255, 176, 0.9);
+                background: radial-gradient(circle at 0 0, rgba(0, 255, 189, 0.3), #041215);
+                box-shadow: 0 0 0 1px rgba(0, 255, 189, 0.55);
+                transform: translateY(-1px);
+            }
+
+                .checkbox-sm:checked::before {
+                    transform: scale(1);
+                }
+
+        @media (max-width: 900px) {
+
+            .log-header,
+            .log-row {
+                grid-template-columns: 40px 2.0fr 1.6fr 1.4fr 1.6fr;
+            }
+
+            .status-cell {
+                display: none;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .header {
+                align-items: flex-start;
+            }
+
+            .searchbox input {
+                width: 100%;
+                min-width: 0;
+            }
+
+            .secondrow {
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+
+<body onselectstart="return false;" ondragstart="return false;" oncontextmenu="return false;">
+    <div class="wrap">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="leftside">
+                <div class="logo">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px"
+                         fill="currentColor">
+                        <path d="M288-48q-29.7 0-50.85-21.15Q216-90.3 216-120v-720q0-33 19.5-52.5T288-912h384q29.7 0 50.85 21.15Q744-869.7 744-840v144q20 0 34 14t14 34v96q0 20-14 34t-34 14v384q0 29.7-21.15 50.85Q701.7-48 672-48H288Zm192.5-288q60.5 0 102-42T624-480q0-60-41.5-102t-102-42Q420-624 378-582t-42 102q0 60 42 102t102.5 42Zm-.5-48q-40.32 0-68.16-27.84Q384-439.68 384-480q0-14 3.25-25.5T397-528l131 131.13q-11 5.87-22.5 9.37Q494-384 480-384Zm83-48L432-563q11-6.5 22.5-9.75T480-576q40.32 0 68.16 27.84Q576-520.32 576-480q0 14-3.25 25.5T563-432Z" />
+                    </svg>
+                </div>
+                <div class="title" data-t="title">Blocked Clients</div>
+            </div>
+
+            <!-- SEARCH -->
+            <div class="searchbox">
+                <svg style="opacity: 0.7" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                     class="bi bi-search" viewBox="0 0 16 16">
+                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+                </svg>
+
+                <input id="searchInput" placeholder="Search..." data-t-placeholder="search" />
+            </div>
+        </div>
+
+        <!-- SECOND ROW (server pills + actions) -->
+        <div class="secondrow">
+            <div class="server-switch" id="serverSwitch">
+                <button class="server-pill active" data-server="all" style="--pill-color:#22c55e" data-t="all_servers">
+                    All Servers
+                </button>
+            </div>
+
+            <div class="header-buttons">
+                <button class="btn" id="btnUnblockSelected">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px"
+                         fill="currentColor">
+                        <path d="M480-564 336-420l51 51 57-57v150h72v-150l57 57 51-51-144-144ZM216-144q-29.7 0-50.85-21.15Q144-186.3 144-216v-474q0-14 5.25-27T165-741l54-54q11-11 23.94-16 12.94-5 27.06-5h420q14.12 0 27.06 5T741-795l54 54q10.5 11 15.75 24t5.25 27v474q0 29.7-21.15 50.85Q773.7-144 744-144H216Zm6-552h516l-48-48H270l-48 48Z" />
+                    </svg>
+                    <span data-t="btn_unblock_selected">Unblock Selected</span>
+                </button>
+
+                <button class="btn" id="btnBlockPermanent">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px"
+                         fill="currentColor">
+                        <path d="m803-56-40-40H624v-72h67l-72-72H240v-68q0-20 8.5-37.5T274-374q34-20 79-36t77-19L168-691v67H96v-139l-40-40 51-50 746 746-50 51ZM600-600q0 29-12.5 52.5T555-507L387-675q17-20 40.5-32.5T480-720q50 0 85 35t35 85Zm264 264v138l-72-72v-66h72ZM168-96q-29 0-50.5-21.5T96-168v-168h72v168h168v72H168Zm624-528v-168H624v-72h168q29 0 50.5 21.5T864-792v168h-72ZM336-864v72h-66l-72-72h138Z" />
+                    </svg>
+                    <span data-t="btn_block_perm">Block Permanent</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- <div class="thirdrow">
+            <div></div>
+            <div class="filter-summary" id="filterSummary">
+                Showing: All Servers
+            </div>
+        </div> -->
+        <!-- BLOCKED TABLE -->
+        <div class="log-table">
+            <div class="log-header">
+                <div class="log-header-check">
+                    <input type="checkbox" id="selectAllCheckbox" class="checkbox-sm" />
+                </div>
+                <div data-t="th_client">Client</div>
+                <div data-t="th_ip">IP</div>
+                <div data-t="th_country">Country</div>
+                <div data-t="th_id">ID</div>
+                <div data-t="th_status">Status</div>
+            </div>
+            <div class="log-body" id="logBody"></div>
+        </div>
+    </div>
+
+    <script>
+        /* =========================
+           MULTI-LANGUAGE SYSTEM
+        ========================= */
+        const LANG_TEXT = {
+            en: {
+                title: "Blocked Clients",
+                search: "Search...",
+                all_servers: "All Servers",
+                btn_unblock_selected: "Unblock Selected",
+                btn_block_perm: "Block Permanent",
+                th_client: "Client",
+                th_ip: "IP",
+                th_country: "Country",
+                th_id: "ID",
+                th_status: "Status",
+                status_temp: "Temporary",
+                status_perm: "Permanent"
+            },
+            ar: {
+                title: "العملاء المحظورون",
+                search: "بحث...",
+                all_servers: "كل الخوادم",
+                btn_unblock_selected: "إلغاء حظر المحددين",
+                btn_block_perm: "حظر بشكل دائم",
+                th_client: "العميل",
+                th_ip: "IP",
+                th_country: "الدولة",
+                th_id: "المعرف",
+                th_status: "الحالة",
+                status_temp: "مؤقت",
+                status_perm: "دائم"
+            },
+            zh: {
+                title: "已封锁客户端",
+                search: "搜索...",
+                all_servers: "所有服务器",
+                btn_unblock_selected: "解除封锁(选中)",
+                btn_block_perm: "永久封锁",
+                th_client: "客户端",
+                th_ip: "IP",
+                th_country: "国家",
+                th_id: "标识",
+                th_status: "状态",
+                status_temp: "临时",
+                status_perm: "永久"
+            },
+            tr: {
+                title: "Engellenen İstemciler",
+                search: "Ara...",
+                all_servers: "Tüm Sunucular",
+                btn_unblock_selected: "Seçileni Engelden Kaldır",
+                btn_block_perm: "Kalıcı Engelle",
+                th_client: "İstemci",
+                th_ip: "IP",
+                th_country: "Ülke",
+                th_id: "ID",
+                th_status: "Durum",
+                status_temp: "Geçici",
+                status_perm: "Kalıcı"
+            },
+            ru: {
+                title: "Заблокированные клиенты",
+                search: "Поиск...",
+                all_servers: "Все серверы",
+                btn_unblock_selected: "Разблокировать выбранные",
+                btn_block_perm: "Заблокировать навсегда",
+                th_client: "Клиент",
+                th_ip: "IP",
+                th_country: "Страна",
+                th_id: "ID",
+                th_status: "Статус",
+                status_temp: "Временно",
+                status_perm: "Навсегда"
+            },
+            es: {
+                title: "Clientes Bloqueados",
+                search: "Buscar...",
+                all_servers: "Todos los servidores",
+                btn_unblock_selected: "Desbloquear seleccionados",
+                btn_block_perm: "Bloqueo permanente",
+                th_client: "Cliente",
+                th_ip: "IP",
+                th_country: "País",
+                th_id: "ID",
+                th_status: "Estado",
+                status_temp: "Temporal",
+                status_perm: "Permanente"
+            },
+            pt: {
+                title: "Clientes Bloqueados",
+                search: "Pesquisar...",
+                all_servers: "Todos os servidores",
+                btn_unblock_selected: "Desbloquear selecionados",
+                btn_block_perm: "Bloquear permanentemente",
+                th_client: "Cliente",
+                th_ip: "IP",
+                th_country: "País",
+                th_id: "ID",
+                th_status: "Status",
+                status_temp: "Temporário",
+                status_perm: "Permanente"
+            }
+        };
+
+        function applyLang() {
+            let lang = document.documentElement.lang || "en";
+            let t = LANG_TEXT[lang] || LANG_TEXT.en;
+
+            document.querySelectorAll("[data-t]").forEach(el => {
+                const key = el.getAttribute("data-t");
+                if (t[key]) el.textContent = t[key];
+            });
+
+            document.querySelectorAll("[data-t-placeholder]").forEach(el => {
+                const key = el.getAttribute("data-t-placeholder");
+                if (t[key]) el.placeholder = t[key];
+            });
+        }
+
+        applyLang();
+
+        /* =========================
+           LOGIC
+        ========================= */
+        const servers = new Map(); // serverName -> color
+        const serverSwitch = document.getElementById("serverSwitch");
+        const logBody = document.getElementById("logBody");
+        //const filterSummary = document.getElementById("filterSummary");
+
+        const selectAllCheckbox = document.getElementById("selectAllCheckbox");
+        const btnUnblockSelected = document.getElementById("btnUnblockSelected");
+        const btnBlockPermanent = document.getElementById("btnBlockPermanent");
+
+        let activeServer = "all";
+        let searchQuery = "";
+
+        function createServerPill(serverName, serverColor) {
+            if (servers.has(serverName)) return;
+
+            servers.set(serverName, serverColor);
+
+            const pill = document.createElement("button");
+            pill.className = "server-pill";
+            pill.dataset.server = serverName;
+            pill.textContent = serverName;
+            pill.style.setProperty("--pill-color", serverColor);
+
+            serverSwitch.appendChild(pill);
+        }
+
+        function setActiveServer(server) {
+            activeServer = server;
+
+            document
+                .querySelectorAll(".server-pill")
+                .forEach(p => p.classList.toggle("active", p.dataset.server === server));
+
+            // filterSummary.textContent =
+            //     server === "all" ? "Showing: All Servers" : `Showing: ${server}`;
+
+            applyFilters();
+        }
+
+        function applyFilters() {
+            const rows = document.querySelectorAll(".log-row");
+            const q = searchQuery.toLowerCase();
+
+            rows.forEach(row => {
+                const rowServer = row.dataset.server;
+                const matchesServer = activeServer === "all" || rowServer === activeServer;
+                const text = row.innerText.toLowerCase();
+                const matchesSearch = !q || text.includes(q);
+
+                row.style.display = matchesServer && matchesSearch ? "" : "none";
+            });
+        }
+
+        // server pills click
+        serverSwitch.addEventListener("click", e => {
+            const pill = e.target.closest(".server-pill");
+            if (!pill) return;
+            setActiveServer(pill.dataset.server);
+        });
+
+        // search
+        document.getElementById("searchInput").addEventListener("input", e => {
+            searchQuery = e.target.value || "";
+            applyFilters();
+        });
+
+        // select-all
+        selectAllCheckbox.addEventListener("change", e => {
+            const checked = e.target.checked;
+            document.querySelectorAll(".row-checkbox").forEach(cb => {
+                cb.checked = checked;
+            });
+        });
+
+        // helper to call the VB bridge
+        function callHostUnblock(mobid, userip, servaddress) {
+            if (!mobid) return;
+
+            try {
+                window.chrome.webview.hostObjects.blkhost.unblockclient(mobid, userip, servaddress);
+            } catch (e) {
+                console.error("Error calling blkhost.unblockclient:", e);
+            }
+        }
+        function callHostblockPre(mobid, userip, servaddress) {
+            if (!mobid) return;
+
+            try {
+                window.chrome.webview.hostObjects.blkhost.blockprement(mobid, userip, servaddress);
+            } catch (e) {
+                console.error("Error calling blkhost.blockprement:", e);
+            }
+        }
+        // Unblock selected: call VB host + remove rows from UI
+        btnUnblockSelected.addEventListener("click", () => {
+            document.querySelectorAll(".row-checkbox:checked").forEach(cb => {
+                const row = cb.closest(".log-row");
+                if (!row) return;
+                const mobid = row.dataset.blockid;
+                const userip = row.dataset.blockip;
+                const servaddress = row.dataset.saddress;
+                callHostUnblock(mobid, userip, servaddress);
+                // Remove from localStorage if it was a permanent block
+                removePermRowFromLocalStorage(row);
+
+                row.remove();
+            });
+            selectAllCheckbox.checked = false;
+        });
+        function removePermRowFromLocalStorage(row) {
+            const serverName = row.dataset.server || "default";
+            const mobid = row.dataset.blockid || "";
+            const ip = row.dataset.blockip || "";
+
+            if (!mobid && !ip) return; // nothing to match on
+
+            const key = getPermStorageKey(serverName);
+            let list = [];
+            try {
+                const raw = localStorage.getItem(key);
+                if (!raw) return; // nothing stored for this server
+                list = JSON.parse(raw);
+            } catch {
+                return;
+            }
+
+            // Remove matching entry (same mobid + ip)
+            const newList = list.filter(x => !(x.mobid === mobid && x.ip === ip));
+
+            if (newList.length === 0) {
+                // Clean up key if empty
+                localStorage.removeItem(key);
+            } else {
+                localStorage.setItem(key, JSON.stringify(newList));
+            }
+        }
+
+        // Block Permanent (mark selected rows as permanent in UI)
+        btnBlockPermanent.addEventListener("click", () => {
+            const lang = document.documentElement.lang || "en";
+            const t = LANG_TEXT[lang] || LANG_TEXT.en;
+            const labelPerm = t.status_perm || "Permanent";
+
+            document.querySelectorAll(".row-checkbox:checked").forEach(cb => {
+                const row = cb.closest(".log-row");
+                if (!row) return;
+                row.dataset.permanent = "true";
+                const statusCell = row.querySelector(".status-cell");
+                if (statusCell) {
+                    const mobid = row.dataset.blockid;
+                    const userip = row.dataset.blockip;
+                    const servaddress = row.dataset.saddress;
+                    callHostblockPre(mobid, userip, servaddress);
+
+                    savePermRowToLocalStorage(row);
+                    statusCell.innerHTML = `<span class="status-pill status-perm">${labelPerm}</span>`;
+                }
+            });
+        });
+
+        function getPermStorageKey(serverName) {
+            return "blocked_perm_" + serverName;
+        }
+
+        function savePermRowToLocalStorage(row) {
+            const serverName = row.dataset.server || "default";
+            const mobid = row.dataset.blockid || "";
+            const ip = row.dataset.blockip || "";
+
+            const nameCell = row.querySelector(".client-cell");
+            const countryCell = row.querySelector(".country-cell");
+
+            const name = nameCell ? nameCell.textContent.trim() : "";
+            const country = countryCell ? countryCell.textContent.trim() : "";
+
+            const avatar = row.dataset.avatar || "";
+            const serverColor = row.dataset.servercolor || "#22c55e";
+            const saddress = row.dataset.saddress || "";
+
+            if (!mobid && !ip) return;
+
+            const key = getPermStorageKey(serverName);
+            let list = [];
+            try {
+                const raw = localStorage.getItem(key);
+                if (raw) list = JSON.parse(raw);
+            } catch { }
+
+            // de-duplicate by mobid+ip
+            if (!list.some(x => x.mobid === mobid && x.ip === ip)) {
+                list.push({ mobid, ip, name, country, avatar, serverName, serverColor, saddress });
+                localStorage.setItem(key, JSON.stringify(list));
+            }
+        }
+
+
+        function loadPermanentFromLocalStorage(serverName) {
+            const key = getPermStorageKey(serverName);
+            let list = [];
+            try {
+                const raw = localStorage.getItem(key);
+                if (!raw) return;
+                list = JSON.parse(raw);
+            } catch {
+                return;
+            }
+
+            const lang = document.documentElement.lang || "en";
+            const t = LANG_TEXT[lang] || LANG_TEXT.en;
+            const labelPerm = t.status_perm || "Permanent";
+
+            list.forEach(entry => {
+                const avatarBase64 = entry.avatar || "";
+                const name = entry.name || "";
+                const ip = entry.ip || "";
+                const country = entry.country || "";
+                const srvName = entry.serverName || serverName;
+                const srvColor = entry.serverColor || "#22c55e";
+                const mobid = entry.mobid || "";
+                const saddress = entry.saddress || "";
+
+                addBlockedClient(
+                    avatarBase64,
+                    name,
+                    ip,
+                    country,
+                    srvName,
+                    srvColor,
+                    true,      // isPermanent
+                    saddress,  // serveraddress
+                    mobid      // blockId
+                );
+            });
+        }
+
+
+        /* =========================
+           ADD BLOCKED CLIENT (API)
+           avatarBase64, name, ip, country, serverName, serverColor,
+           isPermanent, blockId
+
+           - blockId is what you want VB to receive in unblockclient(btnidf)
+             (e.g. mobid, or ip, or "name | country | address | mobid")
+        ========================= */
+        function addBlockedClient(
+            avatarBase64,
+            name,
+            ip,
+            country,
+            serverName,
+            serverColor,
+            isPermanent = false,
+            serveraddress = "",
+            blockId = ""
+        ) {
+            createServerPill(serverName, serverColor);
+
+            const lang = document.documentElement.lang || "en";
+            const t = LANG_TEXT[lang] || LANG_TEXT.en;
+            const labelTemp = t.status_temp || "Temporary";
+            const labelPerm = t.status_perm || "Permanent";
+
+            const row = document.createElement("div");
+            row.className = "log-row";
+            row.dataset.server = serverName;
+            row.dataset.permanent = isPermanent ? "true" : "false";
+            row.dataset.blockid = blockId || "";
+            row.dataset.blockip = ip || "";
+            row.dataset.saddress = serveraddress || "";
+            row.dataset.avatar = avatarBase64 || "";
+            row.dataset.servercolor = serverColor || "";
+
+            const statusClass = isPermanent ? "status-perm" : "status-temp";
+            const statusLabel = isPermanent ? labelPerm : labelTemp;
+
+            row.innerHTML = `
+            <div class="log-select">
+                <input type="checkbox" class="row-checkbox checkbox-sm">
+                <img class="avatar" src="data:image/png;base64,${avatarBase64}" alt="" />
+            </div>
+            <div class="client-cell" title="${name}">${name}</div>
+            <div class="ip-cell" title="${ip}">${ip}</div>
+            <div class="country-cell" title="${country}">${country}</div>
+            <div class="id-cell" title="${blockId}">${blockId || "-"}</div>
+            <div class="status-cell">
+                <span class="status-pill ${statusClass}">${statusLabel}</span>
+            </div>
+        `;
+
+            logBody.appendChild(row);
+            applyFilters();
+        }
+
+
+        // Disable context menu (redundant with body attribute but fine)
+        window.addEventListener("contextmenu", e => e.preventDefault());
+
+        /* DEMO (can be removed in production) */
+            // const demoAvatar =
+            //     "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=";
+
+            // // Example: mobid as blockId
+            // addBlockedClient(
+            //     demoAvatar,
+            //     "ToxicPlayer01",
+            //     "192.168.1.55",
+            //     "🇺🇸 United States",
+            //     "Home",
+            //     "#4ade80",
+            //     false,
+            //     "MOBID-123456"
+            // );
+    </script>
+</body>
+
+</html>

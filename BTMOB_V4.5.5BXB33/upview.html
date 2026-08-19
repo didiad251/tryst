@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Updates</title>
+
+    <style>
+        :root {
+            --bg: #060a0f;
+            --panel: #0e1621;
+            --muted: #91a3b6;
+            --text: #e6edf3;
+            --accent: #02b075;
+            --accent-2: #26d8a7;
+            --danger: #e21014;
+            --border: #1a2533;
+            --radius: 14px;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        /* GENERAL */
+        body {
+            margin: 0;
+            padding: 5px;
+            background: var(--bg);
+            color: var(--text);
+            overflow: hidden;
+            font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+        }
+
+        .wrap {
+            background: transparent;
+            padding: 5px;
+            border-radius: var(--radius);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        *::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        *::-webkit-scrollbar-thumb {
+            background: linear-gradient(var(--accent), var(--accent-2));
+            border-radius: 8px;
+        }
+
+        /* HEADER */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding: 4px 4px 4px;
+        }
+
+        .leftside {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+
+        .logo {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            display: grid;
+            place-items: center;
+            background: conic-gradient(from 220deg at 50% 50%, rgba(2, 176, 117, 0.25), rgba(38, 216, 167, 0.15), rgba(2, 176, 117, 0.25));
+            border: 1px solid rgba(7, 197, 133, 0.45);
+        }
+
+        .title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            background: linear-gradient(120deg, var(--accent), var(--accent-2));
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 999px;
+            object-fit: cover;
+            background: transparent;
+            border: 0px;
+        }
+
+        /* BUTTONS */
+        .header-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .btn {
+            width: 130px;
+            height: 60px;
+            font-size: 10.5px;
+            font-weight: bold;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 4px;
+            color: var(--muted);
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+            .btn:hover {
+                color: var(--accent-2);
+                fill: var(--accent-2);
+                border-color: var(--accent-2);
+                box-shadow: 0 0 10px var(--accent-2);
+            }
+
+            .btn svg {
+                width: 18px;
+                height: 18px;
+            }
+
+        /* SECOND ROW: SERVER SWITCH */
+        .secondrow {
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            justify-content: space-between;
+            padding: 6px 6px 2px;
+            box-sizing: border-box;
+        }
+
+        .server-switch {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .server-pill {
+            position: relative;
+            padding: 6px 14px 6px 24px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: #0b1420;
+            color: var(--muted);
+            font-size: 0.78rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: 0.18s ease;
+            outline: none;
+        }
+
+            .server-pill::before {
+                content: "";
+                position: absolute;
+                left: 9px;
+                width: 8px;
+                height: 8px;
+                border-radius: 999px;
+                background: var(--pill-color, var(--accent-2));
+            }
+
+            .server-pill:hover {
+                color: var(--accent-2);
+                border-color: var(--accent-2);
+                box-shadow: 0 0 10px var(--accent-2);
+                background: #101a28;
+            }
+
+            .server-pill.active {
+                color: var(--accent-2);
+                border-color: var(--accent-2);
+                background: radial-gradient(circle at 0 0, rgba(38, 216, 167, 0.3), #0b1522);
+            }
+
+        /* INFO AREA */
+        .info-box {
+            padding: 6px 10px 10px;
+            font-size: 0.8rem;
+            color: var(--muted);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .info-item {
+            min-width: 160px;
+        }
+
+        .info-label {
+            opacity: 0.8;
+            margin-right: 4px;
+        }
+
+        .info-value {
+            color: var(--accent-2);
+        }
+
+        @media (max-width: 640px) {
+            .header {
+                align-items: flex-start;
+            }
+
+            .header-buttons {
+                justify-content: flex-start;
+            }
+
+            .info-box {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body onselectstart="return false;" ondragstart="return false;" oncontextmenu="return false;">
+    <div class="wrap">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="leftside">
+                <div class="logo">
+                    <img id="userAvatar" class="avatar"
+                         src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII="
+                         alt="avatar" />
+                </div>
+                <div>
+                    <div class="title">BTMOB</div>
+                </div>
+                <div>
+                    <div class="title" data-t="title_updates">Updates</div>
+                </div>
+
+            </div>
+
+
+            <div class="info-box">
+                <div class="info-item">
+                    <span class="info-label" data-t="label_version">Current Version:</span>
+                    <span class="info-value" id="txtVersion">-</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label" data-t="label_updated">Last Update:</span>
+                    <span class="info-value" id="txtUpdated">-</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- SERVER SWITCH ROW -->
+        <div class="secondrow">
+            <div class="server-switch" id="serverSwitch">
+                <!-- VB/JS will populate these; example:
+                <button class="server-pill active" data-server="Home" style="--pill-color:#22c55e">Home</button>
+                -->
+            </div>
+            <div class="header-buttons">
+                <button class="btn" id="btnRefresh">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="M480-192q-120 0-204-84t-84-204q0-120 84-204t204-84q65 0 120.5 27t95.5 72v-99h72v240H528v-72h131q-29-44-76-70t-103-26q-90 0-153 63t-63 153q0 90 63 153t153 63q84 0 144-55.5T693-456h74q-9 112-91 188t-196 76Z" /></svg>
+                    <span data-t="btn_refresh">Refresh</span>
+                </button>
+
+                <button class="btn" id="btnCheckUpdate">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="m720-96 108-108-34-34-50 50v-100h-48v100l-50-50-34 34L720-96ZM480-522 245-657l-29 17v49l264 153 264-153v-49l-30-17-234 135Zm-36 417L180-258q-17.1-9.88-26.55-26.06Q144-300.23 144-320v-320q0-19.77 9.45-35.94Q162.9-692.12 180-702l263-152q17-10 37-10t37 10l263 152q17.1 9.88 26.55 26.06Q816-659.77 816-640v202q-23-9-46.5-13.5T720-456q-110 0-187 77t-77 187q0 26.02 4.5 50.01T474-95q-8-1-15.5-3.5T444-105ZM719.77 0Q640 0 584-56.23q-56-56.22-56-136Q528-272 584.23-328q56.22-56 136-56Q800-384 856-327.77q56 56.22 56 136Q912-112 855.77-56q-56.22 56-136 56Z" /></svg>
+                    <span data-t="btn_checkupdate">Check Update</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- INFO (VERSION / DATE) -->
+
+    </div>
+
+    <script>
+        /* =========================
+           MULTI-LANGUAGE SYSTEM
+        ========================= */
+        const LANG_TEXT = {
+            en: {
+                title_updates: "Updates",
+                btn_refresh: "Refresh",
+                btn_checkupdate: "Check Update",
+                label_version: "Current Version:",
+                label_updated: "Last Update:"
+            },
+            ar: {
+                title_updates: "التحديثات",
+                btn_refresh: "تحديث",
+                btn_checkupdate: "فحص التحديث",
+                label_version: "الإصدار الحالي:",
+                label_updated: "آخر تحديث:"
+            },
+            zh: {
+                title_updates: "更新",
+                btn_refresh: "刷新",
+                btn_checkupdate: "检查更新",
+                label_version: "当前版本:",
+                label_updated: "最后更新:"
+            },
+            tr: {
+                title_updates: "Güncellemeler",
+                btn_refresh: "Yenile",
+                btn_checkupdate: "Güncelleme Kontrolü",
+                label_version: "Geçerli Sürüm:",
+                label_updated: "Son Güncelleme:"
+            },
+            ru: {
+                title_updates: "Обновления",
+                btn_refresh: "Обновить",
+                btn_checkupdate: "Проверить обновления",
+                label_version: "Текущая версия:",
+                label_updated: "Последнее обновление:"
+            },
+            es: {
+                title_updates: "Actualizaciones",
+                btn_refresh: "Actualizar",
+                btn_checkupdate: "Comprobar actualización",
+                label_version: "Versión actual:",
+                label_updated: "Última actualización:"
+            },
+            pt: {
+                title_updates: "Atualizações",
+                btn_refresh: "Atualizar",
+                btn_checkupdate: "Verificar atualização",
+                label_version: "Versão atual:",
+                label_updated: "Última atualização:"
+            }
+        };
+
+        function applyLang() {
+            let lang = document.documentElement.lang || "en";
+            let t = LANG_TEXT[lang] || LANG_TEXT.en;
+
+            document.querySelectorAll("[data-t]").forEach(el => {
+                const key = el.getAttribute("data-t");
+                if (t[key]) el.textContent = t[key];
+            });
+        }
+
+        applyLang();
+
+        /* =========================
+           SERVER SWITCH + BRIDGE
+        ========================= */
+        const serverSwitch = document.getElementById("serverSwitch");
+        let activeServer = "";
+        let activeServerip = "";
+
+        function createServerPill(serverName, serverColor, serverip) {
+            const pill = document.createElement("button");
+            pill.className = "server-pill";
+            pill.dataset.server = serverName;
+            pill.dataset.serverip = serverip;
+            pill.textContent = serverName;
+            pill.style.setProperty("--pill-color", serverColor || "#22c55e");
+            serverSwitch.appendChild(pill);
+        }
+
+        function setActiveServer(serverName, srverip) {
+            activeServer = serverName || "";
+            activeServerip = srverip || "";
+
+            document.querySelectorAll(".server-pill")
+                .forEach(p => p.classList.toggle("active", p.dataset.server === serverName));
+
+            // Notify VB to load updates for this server
+            try {
+                if (window.chrome &&
+                    window.chrome.webview &&
+                    window.chrome.webview.hostObjects &&
+                    window.chrome.webview.hostObjects.updhost &&
+                    typeof window.chrome.webview.hostObjects.updhost.loadupdates === "function") {
+                    window.chrome.webview.hostObjects.updhost.loadupdates(srverip);
+                }
+            } catch (e) {
+                console.error("Error calling updhost.loadupdates:", e);
+            }
+        }
+
+        serverSwitch.addEventListener("click", e => {
+            const pill = e.target.closest(".server-pill");
+            if (!pill) return;
+            setActiveServer(pill.dataset.server, pill.dataset.serverip);
+        });
+
+        // Buttons → VB
+        document.getElementById("btnRefresh").addEventListener("click", () => {
+            try {
+                if (window.chrome &&
+                    window.chrome.webview &&
+                    window.chrome.webview.hostObjects &&
+                    window.chrome.webview.hostObjects.updhost &&
+                    typeof window.chrome.webview.hostObjects.updhost.refresh === "function") {
+                    window.chrome.webview.hostObjects.updhost.refresh(activeServerip);
+                }
+            } catch (e) {
+                console.error("Error calling updhost.refresh:", e);
+            }
+        });
+
+        document.getElementById("btnCheckUpdate").addEventListener("click", () => {
+            try {
+                if (window.chrome &&
+                    window.chrome.webview &&
+                    window.chrome.webview.hostObjects &&
+                    window.chrome.webview.hostObjects.updhost &&
+                    typeof window.chrome.webview.hostObjects.updhost.checkupdate === "function") {
+                    window.chrome.webview.hostObjects.updhost.checkupdate(activeServerip);
+                }
+            } catch (e) {
+                console.error("Error calling updhost.checkupdate:", e);
+            }
+        });
+
+        /* =========================
+           API FOR VB.NET
+        ========================= */
+
+        // VB can call: setVersionInfo("v1.2.3", "2025-01-15")
+        function setVersionInfo(version, updatedDate) {
+            document.getElementById("txtVersion").textContent = version || "-";
+            document.getElementById("txtUpdated").textContent = updatedDate || "-";
+        }
+
+        // VB can call: addUpdateServer("Home", "#4ade80")
+        function addUpdateServer(serverName, serverColor, srverip) {
+            createServerPill(serverName, serverColor, srverip);
+            if (!activeServer) {
+                setActiveServer(serverName, srverip);
+            }
+        }
+
+        // VB can call: setAvatar("BASE64_STRING")
+        function setAvatar(base64) {
+            if (!base64) return;
+            const img = document.getElementById("userAvatar");
+            img.src = "data:image/png;base64," + base64;
+        }
+
+        // Disable context menu
+        window.addEventListener("contextmenu", e => e.preventDefault());
+    </script>
+</body>
+
+</html>

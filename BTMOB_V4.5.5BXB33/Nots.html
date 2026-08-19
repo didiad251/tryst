@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Notifications</title>
+
+    <style>
+        :root {
+            --bg: #060a0f;
+            --panel: #0e1621;
+            --muted: #91a3b6;
+            --text: #e6edf3;
+            --accent: #02b075;
+            --accent-2: #26d8a7;
+            --danger: #e21014;
+            --border: #1a2533;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            --radius: 14px;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+            -webkit-tap-highlight-color: transparent;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* GENERAL */
+        body {
+            margin: 0;
+            padding: 5px;
+            background: var(--bg);
+            color: var(--text);
+            font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+        }
+
+        .wrap {
+            background: transparent;
+            padding: 5px;
+            border-radius: var(--radius);
+            /* border: 1px solid rgba(255, 255, 255, 0.06); */
+        }
+
+        *::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        *::-webkit-scrollbar-thumb {
+            background: linear-gradient(var(--accent), var(--accent-2));
+            border-radius: 8px;
+        }
+
+        /* HEADER */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 6px;
+            padding: 4px 4px 8px;
+        }
+
+        .title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            background: linear-gradient(120deg, var(--accent), var(--accent-2));
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        /* SEARCH BOX */
+        .searchbox {
+            position: relative;
+        }
+
+            .searchbox input {
+                padding: 8px 34px;
+                background: rgba(12, 18, 32, 0.96);
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                border-radius: 999px;
+                color: #d5deea;
+                font-size: 0.85rem;
+                outline: none;
+                min-width: 210px;
+                box-shadow: 0 0 0 1px transparent;
+            }
+
+                .searchbox input:focus {
+                    border-color: var(--accent);
+                    background: rgba(12, 22, 40, 0.98);
+                    box-shadow: 0 0 0 1px rgba(7, 197, 133, 0.45), 0 0 24px rgba(7, 197, 133, 0.32);
+                    transform: translateY(-1px);
+                }
+
+            .searchbox svg {
+                position: absolute;
+                left: 10px;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 16px;
+                height: 16px;
+                fill: #7b8596;
+                pointer-events: none;
+            }
+
+        /* HEADER SECOND ROW */
+        .secondrow {
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            justify-content: space-between;
+            padding: 4px 4px 10px;
+            box-sizing: border-box;
+        }
+
+        /* LEFT SIDE BRAND */
+        .leftside {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+
+        .logo {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            display: grid;
+            place-items: center;
+            background: conic-gradient(from 220deg at 50% 50%, rgba(2, 176, 117, 0.25), rgba(38, 216, 167, 0.15), rgba(2, 176, 117, 0.25));
+            border: 1px solid rgba(7, 197, 133, 0.45);
+        }
+
+        /* TOP BUTTONS */
+        .header-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .btn {
+            width: 110px;
+            height: 60px;
+            font-size: 10.5px;
+            font-weight: bold;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 4px;
+            color: var(--muted);
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+            .btn:hover {
+                color: var(--accent-2);
+                fill: var(--accent-2);
+                border-color: var(--accent-2);
+                box-shadow: 0 0 10px var(--accent-2);
+            }
+
+            .btn svg {
+                width: 18px;
+                height: 18px;
+            }
+
+        /* MODERN SELECT (native element, custom styling) */
+        .server-filter {
+            background: rgba(12, 18, 32, 0.96);
+            border: 1px solid rgba(255, 255, 255, 0.10);
+            color: var(--text);
+            padding: 7px 30px 7px 12px;
+            border-radius: 999px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            min-width: 150px;
+            line-height: 1.2;
+            transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, transform 0.12s ease;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2016%2016'%3E%3Cpath%20fill='%2391a3b6'%20d='M4%206l4%204%204-4'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 11px center;
+            background-size: 12px;
+        }
+
+            .server-filter:hover {
+                color: var(--accent-2);
+                fill: var(--accent-2);
+                border-color: var(--accent-2);
+                box-shadow: 0 0 10px var(--accent-2);
+            }
+
+            .server-filter:focus {
+                outline: none;
+                border-color: var(--accent);
+                box-shadow: 0 0 0 1px rgba(7, 197, 133, 0.7), 0 0 26px rgba(7, 197, 133, 0.4);
+            }
+
+            .server-filter option {
+                background: #0e1621;
+                color: var(--accent);
+                border: 0px;
+                border-radius: 15px;
+            }
+
+        /* GRID */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 12px;
+            max-height: 75vh;
+            overflow-y: auto;
+            padding-right: 6px;
+            margin-top: 6px;
+        }
+
+        /* NOTIFICATION CARD */
+        .card {
+            background: linear-gradient(145deg, #0d1722 0%, #0a1119 100%);
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 10px 11px 9px;
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+            position: relative;
+            transition: border-color 0.18s ease, transform 0.12s ease, box-shadow 0.18s ease, background 0.18s ease;
+            cursor: pointer;
+        }
+
+            .card:hover {
+                background: radial-gradient(circle at top left, rgba(38, 216, 167, 0.16), transparent 55%), #0f1725;
+                border-color: rgba(38, 216, 167, 0.65);
+                box-shadow: 0 16px 32px rgba(0, 0, 0, 0.86);
+            }
+
+        /* CHECKBOX (custom) */
+        .checkbox-wrap {
+            position: absolute;
+            right: 9px;
+            top: 9px;
+        }
+
+        .checkbox {
+            width: 18px;
+            height: 18px;
+            appearance: none;
+            background: #050814;
+            border: 1px solid #273449;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, transform 0.12s ease;
+            display: grid;
+            place-items: center;
+        }
+
+            .checkbox::before {
+                content: "";
+                width: 10px;
+                height: 10px;
+                border-radius: 4px;
+                transform: scale(0);
+                transition: transform 0.18s ease;
+                background: linear-gradient(135deg, #00ffb0, #08c983);
+                box-shadow: 0 0 12px rgba(0, 255, 176, 0.55);
+            }
+
+            .checkbox:checked {
+                border-color: rgba(0, 255, 176, 0.9);
+                background: radial-gradient(circle at 0 0, rgba(0, 255, 189, 0.3), #041215);
+                box-shadow: 0 0 0 1px rgba(0, 255, 189, 0.55);
+                transform: translateY(-1px);
+            }
+
+                .checkbox:checked::before {
+                    transform: scale(1);
+                }
+
+        /* TOP */
+        .top {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* AVATAR */
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 14px;
+            display: block;
+            object-fit: cover;
+        }
+
+        /* NAME + TITLE */
+        .name {
+            font-weight: 600;
+            color: var(--accent-2);
+            font-size: 0.9rem;
+        }
+
+        .title-text {
+            font-size: 0.74rem;
+            opacity: 0.76;
+            color: var(--muted);
+        }
+
+        /* MESSAGE */
+        .message {
+            font-size: 0.80rem;
+            color: var(--muted);
+            line-height: 1.35rem;
+            max-height: 3.9rem;
+            overflow: hidden;
+        }
+
+        /* BOTTOM */
+        .bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 2px;
+        }
+
+        .time {
+            font-size: 0.72rem;
+            opacity: 0.72;
+            color: #8f9bb0;
+        }
+
+        /* MODERN SERVER TAG */
+        .server-tag {
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 0.70rem;
+            font-weight: 600;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.03)) !important;
+            border: 1px solid rgba(255, 255, 255, 0.18) !important;
+        }
+
+        /* TRASH ICON */
+        .del-icon {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            fill: var(--danger);
+            opacity: 0.82;
+            transition: opacity 0.15s ease, transform 0.12s ease, filter 0.18s ease;
+        }
+
+            .del-icon:hover {
+                opacity: 1;
+                transform: translateY(-1px) scale(1.04);
+                filter: drop-shadow(0 0 10px rgba(255, 108, 108, 0.6));
+            }
+
+        @media (max-width: 640px) {
+            .header {
+                align-items: flex-start;
+            }
+
+            .searchbox input {
+                width: 100%;
+                min-width: 0;
+            }
+
+            .secondrow {
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+
+<body onselectstart="return false;" ondragstart="return false;" oncontextmenu="return false;">
+
+    <div class="wrap">
+
+        <div class="header">
+
+            <div class="leftside">
+                <div class="logo">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px"
+                         fill="currentColor">
+                        <path d="M192-216v-72h48v-240q0-87 53.5-153T432-763v-53q0-20 14-34t34-14q20 0 34 14t14 34v53q85 16 138.5 82T720-528v240h48v72H192ZM479.79-96Q450-96 429-117.15T408-168h144q0 30-21.21 51t-51 21Z" />
+                    </svg>
+                </div>
+                <div class="title" data-t="title">Client Notifications</div>
+
+            </div>
+
+            <!-- SEARCH -->
+            <div class="searchbox">
+                <svg style="opacity: 0.7" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                     class="bi bi-search" viewBox="0 0 16 16">
+                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+                </svg>
+
+                <input id="searchInput" placeholder="Search..." data-t-placeholder="search">
+
+            </div>
+
+
+        </div>
+        <div class="secondrow">
+            <!-- BUTTONS -->
+            <div class="header-buttons">
+                <button class="btn" onclick="deleteSelected()">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M3 6h18v2H3zm2 3h14l-1 12H6zm5-6h2v2h-2z" />
+                    </svg>
+                    <span data-t="del_selected">Delete Selected</span>
+                </button>
+
+                <button class="btn" onclick="deleteAll()">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M3 6h18v2H3zm2 3h14l-1 12H6zm5-6h2v2h-2z" />
+                    </svg>
+                    <span data-t="del_all">Delete All</span>
+                </button>
+            </div>
+            <select id="serverFilter" class="server-filter">
+                <option value="all">All Servers</option>
+            </select>
+
+        </div>
+        <div class="grid" id="notifGrid"></div>
+
+    </div>
+
+    <script>
+        /* =========================
+           MULTI-LANGUAGE SYSTEM
+        ========================= */
+        const LANG_TEXT = {
+            en: {
+                title: "Client Notifications",
+                del_selected: "Delete Selected",
+                del_all: "Delete All",
+                search: "Search..."
+            },
+            ar: {
+                title: "إشعارات العملاء",
+                del_selected: "حذف المحدد",
+                del_all: "حذف الكل",
+                search: "بحث..."
+            },
+            zh: {
+                title: "客户端通知",
+                del_selected: "删除所选",
+                del_all: "删除全部",
+                search: "搜索..."
+            },
+            tr: {
+                title: "İstemci Bildirimleri",
+                del_selected: "Seçileni Sil",
+                del_all: "Tümünü Sil",
+                search: "Ara..."
+            },
+            ru: {
+                title: "Уведомления клиентов",
+                del_selected: "Удалить выбранные",
+                del_all: "Удалить все",
+                search: "Поиск..."
+            },
+            es: {
+                title: "Notificaciones del Cliente",
+                del_selected: "Eliminar seleccionados",
+                del_all: "Eliminar todo",
+                search: "Buscar..."
+            },
+            pt: {
+                title: "Notificações do Cliente",
+                del_selected: "Excluir selecionados",
+                del_all: "Excluir tudo",
+                search: "Pesquisar..."
+            }
+        };
+
+        function applyLang() {
+            let lang = document.documentElement.lang || "en";
+            let t = LANG_TEXT[lang] || LANG_TEXT.en;
+
+            document.querySelectorAll("[data-t]").forEach(el => {
+                el.textContent = t[el.getAttribute("data-t")] || "";
+            });
+
+            document.querySelectorAll("[data-t-placeholder]").forEach(el => {
+                el.placeholder = t[el.getAttribute("data-t-placeholder")] || "";
+            });
+        }
+
+        applyLang();
+
+        /* =========================
+           ADD NOTIFICATION
+        ========================= */
+        const servers = new Map(); // serverName -> color
+
+        function addNotification(avatarBase64, name, title, message, time, serverName, serverColor) {
+            const grid = document.getElementById("notifGrid");
+            if (!servers.has(serverName)) {
+                servers.set(serverName, serverColor);
+
+                const opt = document.createElement("option");
+                opt.value = serverName;
+                opt.textContent = serverName;
+                document.getElementById("serverFilter").appendChild(opt);
+            }
+
+            const card = document.createElement("div");
+            card.className = "card";
+            card.dataset.server = serverName;
+
+            card.innerHTML = `
+        <div class="checkbox-wrap"><input type="checkbox" class="checkbox"></div>
+
+        <div class="top">
+            <img class="avatar" src="data:image/png;base64,${avatarBase64}">
+            <div>
+                <div class="name">${name}</div>
+                <div class="title-text">${title}</div>
+            </div>
+        </div>
+
+        <div class="message">${message}</div>
+
+        <div class="bottom">
+            <div style="display:flex; align-items:center; gap:6px;">
+                <div class="server-tag"
+                     style="color:${serverColor}">
+                     ${serverName}
+                </div>
+                <div class="time">${time}</div>
+            </div>
+
+            <svg class="del-icon" onclick="deleteOne(this)" viewBox="0 0 24 24">
+                <path d="M3 6h18v2H3zm2 3h14l-1 12H6zm5-6h2v2h-2z"/>
+            </svg>
+        </div>
+`;
+
+            grid.prepend(card);
+        }
+
+        function deleteOne(icon) {
+            icon.closest(".card").remove();
+        }
+
+        function deleteSelected() {
+            document.querySelectorAll(".checkbox:checked").forEach(cb =>
+                cb.closest(".card").remove()
+            );
+        }
+
+        function deleteAll() {
+            document.getElementById("notifGrid").innerHTML = "";
+        }
+        document.getElementById("serverFilter").addEventListener("change", () => {
+            const filter = document.getElementById("serverFilter").value;
+
+            document.querySelectorAll(".card").forEach(card => {
+                const s = card.dataset.server;
+                card.style.display = (filter === "all" || s === filter) ? "" : "none";
+            });
+        });
+
+        /* =========================
+           SEARCH FILTER
+        ========================= */
+        document.getElementById("searchInput").addEventListener("input", e => {
+            const q = e.target.value.toLowerCase();
+            document.querySelectorAll(".card").forEach(card => {
+                const text = card.innerText.toLowerCase();
+                card.style.display = text.includes(q) ? "" : "none";
+            });
+        });
+
+        window.addEventListener("contextmenu", function (e) {
+            e.preventDefault(); // Disable right-click
+        });
+
+    </script>
+
+</body>
+
+</html>

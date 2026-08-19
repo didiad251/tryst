@@ -1,0 +1,1722 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BTMOB Servers Manager — Enhanced</title>
+    <link rel="preconnect" href="https://unpkg.com" />
+    <style>
+        :root {
+            --bg: #060a0f;
+            --bg-elev: #0a1018;
+            --panel: #0e1621;
+            --muted: #91a3b6;
+            --text: #e6edf3;
+            --ok: #37d399;
+            --warn: #fbbf24;
+            --bad: #f87171;
+            --accent: #02b075;
+            --accent-2: #26d8a7;
+            --border: #1a2533;
+            --chip: #0f2233;
+            --chip-border: #173247;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            --radius: 14px;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+            -webkit-tap-highlight-color: transparent;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        html,
+        body {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Inter", "Segoe UI", Roboto, Arial, sans-serif;
+            background: #060a0f;
+            color: var(--text);
+            letter-spacing: 0.2px;
+            position: relative;
+            isolation: isolate;
+        }
+
+            body::before {
+                content: "";
+                position: fixed;
+                inset: 0;
+                pointer-events: none;
+                opacity: 0.06;
+                background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 160 160"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23n)" opacity="0.35"/></svg>');
+            }
+
+        *::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        *::-webkit-scrollbar-thumb {
+            background: linear-gradient(var(--accent), var(--accent-2));
+            border-radius: 8px;
+        }
+
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            backdrop-filter: blur(10px) saturate(1.2);
+            background: #060a0f;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .wrap {
+            margin: 0 auto;
+            padding: 16px;
+        }
+
+        .topbar {
+            display: grid;
+            gap: 12px;
+            align-items: center;
+            grid-template-columns: 1fr auto;
+        }
+
+        .branding {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            display: grid;
+            place-items: center;
+            box-shadow: var(--shadow);
+            background: conic-gradient(from 220deg at 50% 50%, rgba(2, 176, 117, 0.25), rgba(38, 216, 167, 0.15), rgba(2, 176, 117, 0.25));
+            border: 1px solid color-mix(in hsl, var(--accent) 35%, #0b1220);
+        }
+
+
+        .h1 {
+            font-size: 1.25rem;
+            font-weight: 800;
+            letter-spacing: 0.3px;
+            color: var(--accent);
+        }
+        .dic {
+            font-size: 0.7rem;
+            letter-spacing: 0.3px;
+            color: var(--accent-2);
+        }
+
+        .muted {
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .topsrvbox {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            gap: 12px;
+        }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+            padding: 6px 10px;
+            font-size: 0.78rem;
+            color: #eafff7;
+            background: linear-gradient(180deg, rgba(2, 176, 117, 0.12), rgba(2, 176, 117, 0.06));
+            border-radius: 999px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            flex-direction: row-reverse;
+            justify-content: flex-start;
+        }
+
+        .btn {
+            display: inline-flex;
+            gap: 8px;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border);
+            padding: 10px 14px;
+            background: #0c1520;
+            color: var(--accent);
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.08s ease, border-color 0.15s ease, background 0.2s ease, box-shadow 0.2s ease;
+            border-radius: 12px;
+        }
+
+            .btn:hover {
+                border-color: #2b3b4f;
+                background: rgba(255, 255, 255, 0.03);
+                box-shadow: 0 6px 22px rgba(2, 176, 117, 0.1);
+            }
+
+            .btn:active {
+                transform: translateY(1px) scale(0.99);
+            }
+
+            .btn.primary {
+                border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+                background: linear-gradient(135deg, rgba(2, 176, 117, 0.18), rgba(38, 216, 167, 0.12));
+                color: #d7fff1;
+            }
+
+            .btn.ghost {
+                background: transparent;
+            }
+
+            .btn .ripple,
+            .iconbtn .ripple {
+                position: absolute;
+                border-radius: 50%;
+                pointer-events: none;
+                inset: auto;
+                width: 10px;
+                height: 10px;
+                transform: translate(-50%, -50%) scale(0);
+                background: radial-gradient(circle at center, rgba(2, 176, 117, 0.35), transparent 60%);
+                animation: ripple 0.7s ease-out forwards;
+            }
+
+        @keyframes ripple {
+            to {
+                transform: translate(-50%, -50%) scale(12);
+                opacity: 0;
+            }
+        }
+
+        .toolbar {
+            display: grid;
+            gap: 10px;
+            grid-template-columns: 1fr auto auto;
+        }
+
+        .input,
+        .select {
+            background: var(--panel);
+            color: var(--text);
+            border: 1px solid var(--border);
+            padding: 10px 12px;
+            outline: none;
+            border-radius: 12px;
+        }
+
+            .input:focus,
+            .select:focus {
+                box-shadow: 0 0 0 3px rgba(2, 176, 117, 0.2);
+                border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+            }
+
+            .input::placeholder {
+                color: #6e7f92;
+            }
+
+        .select {
+            appearance: none;
+            padding-right: 34px;
+            background-image: linear-gradient(45deg, transparent 50%, #6e7f92 50%), linear-gradient(135deg, #6e7f92 50%, transparent 50%);
+            background-position: calc(100% - 18px) 16px, calc(100% - 12px) 16px;
+            background-size: 6px 6px;
+            background-repeat: no-repeat;
+        }
+
+        main.wrap {
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 90px);
+            background: transparent;
+            overflow: hidden;
+            padding: 10px 16px 0;
+        }
+
+        #list {
+            flex: 1;
+            overflow-y: auto;
+            min-height: 0;
+            padding-bottom: 24px;
+            display: grid;
+            gap: 12px;
+            grid-template-columns: 1fr;
+        }
+
+        .summary {
+            display: grid;
+            gap: 12px;
+            grid-template-columns: repeat(4, 1fr);
+            background: transparent;
+        }
+
+        .kpi {
+            position: relative;
+            padding: 14px;
+            background: linear-gradient(145deg, #0d1722 0%, #0a1119 100%);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+            isolation: isolate;
+            transition: box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+
+            .kpi h3 {
+                margin: 0;
+                font-size: 0.88rem;
+                font-weight: 700;
+                color: #a5ffdf;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .kpi .value {
+                font-size: 1.5rem;
+                font-weight: 800;
+                letter-spacing: 0.5px;
+                color: var(--accent);
+                margin-top: 6px;
+            }
+
+            .kpi .trend {
+                font-size: 0.8rem;
+                color: var(--muted);
+                margin-top: 6px;
+            }
+
+        .grid {
+            display: grid;
+            gap: 12px;
+            margin-top: 14px;
+            grid-template-columns: 1fr;
+            overflow-y: auto;
+        }
+
+        .card {
+            margin-right: 8px;
+            display: grid;
+            gap: 10px;
+            padding: 14px;
+            border: 1px solid rgba(0, 255, 163, 0.08);
+            background: linear-gradient(145deg, #101a25 0%, #0b1219 100%);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+            border-radius: 16px;
+            animation: card-in 0.5s ease both;
+            max-height: 220px;
+        }
+
+        @keyframes card-in {
+            to {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            border: 1px solid var(--border);
+            background: radial-gradient(60% 60% at 30% 20%, rgba(2, 176, 117, 0.25), transparent), radial-gradient(60% 60% at 70% 80%, rgba(38, 216, 167, 0.25), transparent);
+            font-weight: 900;
+            color: #ccffee;
+        }
+
+        .server-main {
+            display: grid;
+            gap: 6px;
+            align-content: center;
+        }
+
+        .title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 800;
+        }
+
+        .pill {
+            padding: 6px 8px;
+            border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+            border-radius: 999px;
+            font-size: 0.78rem;
+            background: rgba(2, 176, 117, 0.08);
+        }
+
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .badges {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 800;
+            padding: 8px 10px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: #0b141d;
+        }
+
+            .status.ok {
+                border-color: rgba(55, 211, 153, 0.3);
+                box-shadow: 0 0 0 3px rgba(55, 211, 153, 0.06) inset;
+            }
+
+            .status.warn {
+                border-color: rgba(251, 191, 36, 0.35);
+                box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.06) inset;
+            }
+
+            .status.bad {
+                border-color: rgba(248, 113, 113, 0.35);
+                box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.06) inset;
+            }
+
+        .dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: var(--muted);
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.03) inset;
+            position: relative;
+        }
+
+        .ok .dot {
+            background: var(--ok);
+        }
+
+        .warn .dot {
+            background: var(--warn);
+        }
+
+        .bad .dot {
+            background: var(--bad);
+        }
+
+        .ok .dot::after {
+            content: "";
+            position: absolute;
+            inset: -6px;
+            border-radius: 50%;
+            border: 2px solid rgba(55, 211, 153, 0.25);
+            animation: ping 1.6s infinite;
+        }
+
+        .warn .dot::after {
+            content: "";
+            position: absolute;
+            inset: -6px;
+            border-radius: 50%;
+            border: 2px solid rgba(251, 191, 36, 0.25);
+            animation: ping 1.6s infinite;
+        }
+
+        @keyframes ping {
+            0% {
+                transform: scale(0.6);
+                opacity: 0.8;
+            }
+
+            80% {
+                transform: scale(1.3);
+                opacity: 0;
+            }
+
+            100% {
+                opacity: 0;
+            }
+        }
+
+        .actions-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            justify-content: flex-end;
+            align-content: center;
+            padding: 5px;
+        }
+
+        .iconbtn {
+            width: 38px;
+            height: 38px;
+            display: grid;
+            place-items: center;
+            border: 1px solid var(--border);
+            background: var(--bg-elev);
+            cursor: pointer;
+            color: var(--accent);
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .iconbtn:hover {
+                border-color: #2b3b4f;
+                background: rgba(255, 255, 255, 0.03);
+                box-shadow: 0 8px 22px rgba(2, 176, 117, 0.12);
+            }
+
+            .iconbtn:disabled {
+                opacity: 0.4;
+                box-shadow: none;
+                cursor: not-allowed;
+            }
+
+        .metrics {
+            display: grid;
+            gap: 8px;
+            grid-template-columns: repeat(6, minmax(120px, 1fr));
+            margin-top: 6px;
+        }
+
+        .metric {
+            border: 1px solid var(--border);
+            padding: 8px 10px;
+            background: var(--panel);
+            display: grid;
+            gap: 6px;
+            border-radius: 10px;
+            position: relative;
+        }
+
+            .metric h4 {
+                margin: 0;
+                font-size: 0.72rem;
+                color: var(--muted);
+                font-weight: 700;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+
+            .metric .mval {
+                font-weight: 900;
+                letter-spacing: 0.3px;
+                color: var(--accent);
+            }
+
+        dialog::backdrop {
+            background: rgba(0, 0, 0, 0.6);
+        }
+
+        dialog {
+            border: 1px solid var(--border);
+            padding: 0;
+            max-width: 540px;
+            width: calc(100% - 24px);
+            background: var(--bg-elev);
+            color: var(--text);
+            box-shadow: var(--shadow);
+            border-radius: 18px;
+        }
+
+        .modal-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .modal-body {
+            padding: 16px;
+            display: grid;
+            gap: 12px;
+        }
+
+        .grid-2 {
+            display: grid;
+            gap: 12px;
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .field {
+            display: grid;
+            gap: 6px;
+        }
+
+            .field label {
+                font-size: 0.85rem;
+                color: var(--muted);
+            }
+
+        .modal-foot {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+            padding: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .empty {
+            border: 1px dashed var(--border);
+            padding: 24px;
+            display: grid;
+            place-items: center;
+            color: var(--muted);
+            text-align: center;
+            border-radius: 16px;
+        }
+
+        .sep {
+            height: 4px;
+            background: transparent;
+            margin: 10px 0;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .link {
+            color: var(--accent-2);
+            text-decoration: none;
+        }
+
+        .mono {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        }
+
+        [data-tip] {
+            position: relative;
+        }
+
+            [data-tip]:hover::after {
+                content: attr(data-tip);
+                position: absolute;
+                bottom: calc(100% + 8px);
+                right: 0;
+                white-space: nowrap;
+                background: #0b1219;
+                border: 1px solid var(--border);
+                padding: 6px 8px;
+                font-size: 0.75rem;
+                border-radius: 8px;
+                color: #e6fef5;
+                box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35);
+            }
+
+        @media (max-width: 1000px) {
+            .summary {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .metrics {
+                grid-template-columns: repeat(3, minmax(120px, 1fr));
+            }
+        }
+
+        @media (max-width: 640px) {
+            .topbar {
+                grid-template-columns: 1fr;
+            }
+
+            .toolbar {
+                grid-template-columns: 1fr;
+            }
+
+            .summary {
+                grid-template-columns: 1fr;
+            }
+
+            .card {
+                grid-template-columns: 40px 1fr;
+            }
+
+            .actions-row {
+                grid-column: 1 / -1;
+            }
+
+            .metrics {
+                grid-template-columns: repeat(2, minmax(120px, 1fr));
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            .logo,
+            .dot::after {
+                animation: none !important;
+            }
+        }
+
+        .boxactions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .chip2 {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            border-radius: 20px;
+            cursor: pointer;
+            overflow: hidden;
+            width: 44px;
+            /* collapsed size (only icon visible) */
+            transition: width 0.3s ease;
+        }
+
+            .chip2 svg {
+                flex-shrink: 0;
+                padding-right: 4px;
+            }
+
+            .chip2 .titlemsg {
+                white-space: nowrap;
+                opacity: 0;
+                transform: translateX(-10px);
+                transition: opacity 0.25s ease, transform 0.25s ease;
+            }
+
+            /* Hover animation */
+            .chip2:hover {
+                width: auto;
+                /* expanded size */
+            }
+
+                .chip2:hover .titlemsg {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+    </style>
+</head>
+
+<body class="neon-mode" onselectstart="return false;" ondragstart="return false;" oncontextmenu="return false;">
+    <header>
+        <div class="wrap">
+            <div class="topbar">
+                <div class="branding">
+                    <div class="logo" aria-hidden="true">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#02B075"
+                             class="icon icon-tabler icons-tabler-filled icon-tabler-cloud-computing">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path d="M9 20a2 2 0 0 1 -2 2h-4a1 1 0 0 1 0 -2h4v-2.997l-.343 .001a1 1 0 0 1 -.117 -.007l-.105 -.001c-2.94 -.11 -5.317 -2.399 -5.43 -5.263l-.005 -.216c0 -2.747 2.08 -5.01 4.784 -5.417l.114 -.016l.07 -.181c.663 -1.62 2.056 -2.906 3.829 -3.518l.244 -.08c2.194 -.667 4.614 -.224 6.36 1.176c1.385 1.108 2.187 2.686 2.25 4.34l.004 .212l.091 .003c2.3 .107 4.143 1.961 4.25 4.27l.004 .211c0 2.478 -1.997 4.487 -4.465 4.487h-1.535v2.996h4a1 1 0 0 1 0 2h-4a2 2 0 0 1 -2 -2v-2.997h-2v3.997a1 1 0 0 1 -2 0v-3.997h-2z" />
+                        </svg>
+                    </div>
+                    <div class="topsrvbox">
+                        <div>
+                            <div class="h1" id="mtitle">BTMOB Servers </div>
+                            <span class="dic">Multiple server manager</span>
+                        </div>
+                        <div>
+                            <span class="chip chip2" id="copyeml">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"
+                                     class="icon icon-tabler icons-tabler-filled icon-tabler-mail">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                    <path d="M22 7.535v9.465a3 3 0 0 1 -2.824 2.995l-.176 .005h-14a3 3 0 0 1 -2.995 -2.824l-.005 -.176v-9.465l9.445 6.297l.116 .066a1 1 0 0 0 .878 0l.116 -.066l9.445 -6.297z" />
+                                    <path d="M19 4c1.08 0 2.027 .57 2.555 1.427l-9.555 6.37l-9.555 -6.37a2.999 2.999 0 0 1 2.354 -1.42l.201 -.007h14z" />
+                                </svg>
+
+                                <span id="titleml">EVLFDEV@gmail.com</span>
+                            </span>
+                            <span class="chip chip2" id="copytele">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="CurrentColor"
+                                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                     class="icon icon-tabler icons-tabler-outline icon-tabler-brand-telegram">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                    <path d="M15 10l-4 4l6 6l4 -16l-18 7l4 2l2 6l3 -4" />
+                                </svg>
+
+                                <span id="titlemsg">T.ME/BT_MOB</span>
+                            </span>
+
+                            <span class="chip">
+                                <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true"
+                                     xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                                    <path fill-rule="evenodd"
+                                          d="M5 5a2 2 0 0 0-2 2v3a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V7a2 2 0 0 0-2-2H5Zm9 2a1 1 0 1 0 0 2h.01a1 1 0 1 0 0-2H14Zm3 0a1 1 0 1 0 0 2h.01a1 1 0 1 0 0-2H17ZM3 17v-3a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Zm11-2a1 1 0 1 0 0 2h.01a1 1 0 1 0 0-2H14Zm3 0a1 1 0 1 0 0 2h.01a1 1 0 1 0 0-2H17Z"
+                                          clip-rule="evenodd" />
+                                </svg>
+
+                                <span id="countAll">0</span> total
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </header>
+
+    <main class="wrap">
+        <section class="summary" id="summaryRow">
+            <div class="kpi" data-tip="Servers with active sessions">
+                <h3>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-activity"
+                         viewBox="0 0 16 16">
+                        <path fill-rule="evenodd"
+                              d="M6 2a.5.5 0 0 1 .47.33L10 12.036l1.53-4.208A.5.5 0 0 1 12 7.5h3.5a.5.5 0 0 1 0 1h-3.15l-1.88 5.17a.5.5 0 0 1-.94 0L6 3.964 4.47 8.171A.5.5 0 0 1 4 8.5H.5a.5.5 0 0 1 0-1h3.15l1.88-5.17A.5.5 0 0 1 6 2" />
+                    </svg>
+                    Online
+                </h3>
+                <div class="value" id="kOnline">0</div>
+            </div>
+            <div class="kpi" data-tip="Current active connections">
+                <h3>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-link-45deg"
+                         viewBox="0 0 16 16">
+                        <path d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1 1 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4 4 0 0 1-.128-1.287z" />
+                        <path d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243z" />
+                    </svg>
+                    Connections
+                </h3>
+                <div class="value" id="kConnections">0</div>
+            </div>
+            <div class="kpi" data-tip="Aggregate outbound traffic">
+                <h3>
+                    <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v9m-5 0H5a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4a1 1 0 0 0-1-1h-2M8 9l4-5 4 5m1 8h.01" />
+                    </svg>
+
+                    Total
+                    Sent
+                </h3>
+                <div class="value" id="kSent">0 MB</div>
+            </div>
+            <div class="kpi" data-tip="Aggregate inbound traffic">
+                <h3>
+                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 13V4M7 14H5a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4a1 1 0 0 0-1-1h-2m-1-5-4 5-4-5m9 8h.01" />
+                    </svg>
+
+                    Total Received
+                </h3>
+                <div class="value" id="kRecv">0 MB</div>
+            </div>
+        </section>
+
+        <div class="sep"></div>
+        <div class="boxactions">
+            <div class="toolbar">
+                <div style="position: relative">
+                    <svg style="position: absolute; left: 10px; top: 11px; opacity: 0.6" xmlns="http://www.w3.org/2000/svg"
+                         width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+                    </svg>
+
+                    <input id="search" class="input" type="search" placeholder="Search by name, IP, email…"
+                           style="padding-left: 32px" />
+                </div>
+                <select id="sort" class="select" title="Sort">
+                    <option value="recent">Sort: Recently Added</option>
+                    <option value="name">Sort: Name (A→Z)</option>
+                    <option value="status">Sort: Status</option>
+                </select>
+            </div>
+            <div class="actions">
+                <button class="btn primary" id="btnAdd">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg"
+                         viewBox="0 0 16 16">
+                        <path fill-rule="evenodd"
+                              d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2" />
+                    </svg>
+                    Add Server
+                </button>
+                <button class="btn ghost" id="btnExport">
+                    <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 15v2a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-2M12 4v12m0-12 4 4m-4-4L8 8" />
+                    </svg>
+
+                    Export
+                </button>
+                <button class="btn ghost" id="btnImport">
+                    <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 15v2a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-2m-8 1V4m0 12-4-4m4 4 4-4" />
+                    </svg>
+
+                    Import
+                </button>
+            </div>
+        </div>
+
+        <div class="sep"></div>
+        <div id="empty" class="empty hidden">
+            <div>
+                <p>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-inbox-fill"
+                         viewBox="0 0 16 16">
+                        <path d="M4.98 4a.5.5 0 0 0-.39.188L1.54 8H6a.5.5 0 0 1 .5.5 1.5 1.5 0 1 0 3 0A.5.5 0 0 1 10 8h4.46l-3.05-3.812A.5.5 0 0 0 11.02 4zm-1.17-.437A1.5 1.5 0 0 1 4.98 3h6.04a1.5 1.5 0 0 1 1.17.563l3.7 4.625a.5.5 0 0 1 .106.374l-.39 3.124A1.5 1.5 0 0 1 14.117 13H1.883a1.5 1.5 0 0 1-1.489-1.314l-.39-3.124a.5.5 0 0 1 .106-.374z" />
+                    </svg>
+                </p>
+                <p>
+                    No servers yet. Click <strong>Add Server</strong> to get started.
+                </p>
+            </div>
+        </div>
+        <section id="list" class="grid" aria-live="polite"></section>
+
+
+    </main>
+
+    <!-- Add/Edit Modal -->
+    <dialog id="serverModal">
+        <form method="dialog" id="serverForm">
+            <div class="modal-head">
+                <div class="title">
+                    <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                         width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                        <path fill-rule="evenodd"
+                              d="M5 5a2 2 0 0 0-2 2v3a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V7a2 2 0 0 0-2-2H5Zm9 2a1 1 0 1 0 0 2h.01a1 1 0 1 0 0-2H14Zm3 0a1 1 0 1 0 0 2h.01a1 1 0 1 0 0-2H17ZM3 17v-3a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Zm11-2a1 1 0 1 0 0 2h.01a1 1 0 1 0 0-2H14Zm3 0a1 1 0 1 0 0 2h.01a1 1 0 1 0 0-2H17Z"
+                              clip-rule="evenodd" />
+                    </svg>
+                    <span id="modalTitle">Add Server</span>
+                </div>
+                <button type="button" class="iconbtn" id="closeModal" aria-label="Close">
+                    <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                         width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                        <path fill-rule="evenodd"
+                              d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm7.707-3.707a1 1 0 0 0-1.414 1.414L10.586 12l-2.293 2.293a1 1 0 1 0 1.414 1.414L12 13.414l2.293 2.293a1 1 0 0 0 1.414-1.414L13.414 12l2.293-2.293a1 1 0 0 0-1.414-1.414L12 10.586 9.707 8.293Z"
+                              clip-rule="evenodd" />
+                    </svg>
+
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="field">
+                    <label for="name">Display Name</label>
+                    <input id="name" class="input" placeholder="e.g., API Node — Paris" required />
+                </div>
+                <div class="grid-2">
+                    <div class="field">
+                        <label for="ip">IP / Host</label>
+                        <input id="ip" class="input mono" placeholder="192.168.1.10 or host.example.com" required />
+                    </div>
+                    <div class="field">
+                        <label for="email">User Email</label>
+                        <input id="email" type="email" class="input" placeholder="admin@example.com" required />
+                    </div>
+                </div>
+                <div class="grid-2">
+                    <div class="field">
+                        <label for="password">Password</label>
+                        <input id="password" class="input" type="password" placeholder="••••••••" required />
+                    </div>
+                    <div class="field">
+                        <label for="Ckey">Connection Key</label>
+                        <input id="Ckey" class="input" placeholder="123456 or TxTxT ...." />
+                    </div>
+                </div>
+                <div class="grid-2">
+                    <div class="field">
+                        <label for="notes">Notes</label>
+                        <input id="notes" class="input" placeholder="Optional notes…" />
+                    </div>
+                    <div class="field">
+                        <label for="color">Accent</label>
+                        <input id="color" class="input" type="color" value="#02B075" />
+                    </div>
+                </div>
+            </div>
+            <div class="modal-foot">
+                <button class="btn ghost" value="cancel" type="button" id="cancelBtn">
+                    Cancel
+                </button>
+                <button class="btn primary" value="default" id="saveBtn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-check"
+                         viewBox="0 0 16 16">
+                        <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425z" />
+                    </svg>
+                    Save
+                </button>
+            </div>
+        </form>
+    </dialog>
+
+    <!-- Templates -->
+    <template id="serverCardTpl">
+        <article class="card">
+            <div class="topsrvbox">
+                <div class="boxlefter" style="display: flex; align-items: center; gap: 12px">
+                    <div class="avatar mono">SV</div>
+                    <div class="title">
+                        <span class="srv-name">Server Name</span>
+                        <span class="pill mono srv-ip">0.0.0.0</span>
+                        <span class="status"><span class="dot"></span><span class="srv-status">DISCONNECTED</span></span>
+                    </div>
+                </div>
+                <div class="actions-row">
+                    <button class="iconbtn btn-connect" title="Connect" data-tip="Connect">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-player-play"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M7 4v16l13 -8z" /></svg>
+                    </button>
+                    <button class="iconbtn btn-disconnect" title="Disconnect" data-tip="Disconnect">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-player-pause"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M6 5m0 1a1 1 0 0 1 1 -1h2a1 1 0 0 1 1 1v12a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1z" /><path d="M14 5m0 1a1 1 0 0 1 1 -1h2a1 1 0 0 1 1 1v12a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1z" /></svg>
+                    </button>
+
+                    <button class="iconbtn btn-build" title="Build App" disabled data-tip="Build (connected only)">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-package"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M12 3l8 4.5l0 9l-8 4.5l-8 -4.5l0 -9l8 -4.5" /><path d="M12 12l8 -4.5" /><path d="M12 12l0 9" /><path d="M12 12l-8 -4.5" /><path d="M16 5.25l-8 4.5" /></svg>
+                    </button>
+
+
+                    <button class="iconbtn btn-edit" title="Edit" data-tip="Edit">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-pencil"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" /><path d="M13.5 6.5l4 4" /></svg>
+                    </button>
+
+                    <button class="iconbtn btn-delete" title="Delete" data-tip="Delete">
+                        <svg class="w-[24px] h-[24px] text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z" />
+                        </svg>
+
+                    </button>
+
+                </div>
+            </div>
+            <div class="server-main">
+                <div class="meta">
+                    <span class="chip">
+                        <!-- mail -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect width="20" height="16" x="2" y="4" rx="2" />
+                            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                        </svg>
+                        <span class="srv-email">email</span>
+                    </span>
+
+                    <span class="chip">
+                        <!-- key -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" class="icon icon-tabler icons-tabler-filled icon-tabler-key"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M14.52 2c1.029 0 2.015 .409 2.742 1.136l3.602 3.602a3.877 3.877 0 0 1 0 5.483l-2.643 2.643a3.88 3.88 0 0 1 -4.941 .452l-.105 -.078l-5.882 5.883a3 3 0 0 1 -1.68 .843l-.22 .027l-.221 .009h-1.172c-1.014 0 -1.867 -.759 -1.991 -1.823l-.009 -.177v-1.172c0 -.704 .248 -1.386 .73 -1.96l.149 -.161l.414 -.414a1 1 0 0 1 .707 -.293h1v-1a1 1 0 0 1 .883 -.993l.117 -.007h1v-1a1 1 0 0 1 .206 -.608l.087 -.1l1.468 -1.469l-.076 -.103a3.9 3.9 0 0 1 -.678 -1.963l-.007 -.236c0 -1.029 .409 -2.015 1.136 -2.742l2.643 -2.643a3.88 3.88 0 0 1 2.741 -1.136m.495 5h-.02a2 2 0 1 0 0 4h.02a2 2 0 1 0 0 -4" /></svg>
+                        <span class="srv-Ckey">—</span>
+                    </span>
+
+                    <span class="chip">
+                        <!-- clock -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10" />
+                            <polyline points="12 6 12 12 16 14" />
+                        </svg>
+                        <span class="srv-added">—</span>
+                    </span>
+
+                    <span class="chip">
+                        <!-- file-text -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                            <path d="M14 2v6h6" />
+                            <path d="M16 13H8" />
+                            <path d="M16 17H8" />
+                            <path d="M10 9H8" />
+                        </svg>
+                        <span class="srv-notes">—</span>
+                    </span>
+                </div>
+
+                <div class="metrics">
+
+                    <div class="metric">
+                        <h4>
+                            <!-- calendar-clock -->
+                            <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#FFFFFF"><path d="M218.46-531.08h523.08v-138.46q0-9.23-7.69-16.92-7.7-7.69-16.93-7.69H243.08q-9.23 0-16.93 7.69-7.69 7.69-7.69 16.92v138.46Zm0 0v-163.07 163.07Zm24.62 388.93q-22.64 0-38.09-15.45-15.45-15.45-15.45-37.91v-474.21q0-21.76 15.8-37.56t37.74-15.8h105.84v-105.23h32v105.23h201.23v-105.23h28.93v105.23h105.84q21.94 0 37.74 15.8t15.8 37.74v193.08q-7.03-.5-14.38.11-7.35.62-14.54.85v-26.65H218.46v306.46q0 9.23 7.69 16.92 7.7 7.69 16.93 7.69h275.88q.81 8.4 4.23 14.77 3.41 6.36 6.27 14.16H243.08Zm497 48q-61.89 0-104.68-43.02-42.78-43.01-42.78-104.9 0-61.89 43.01-104.68 43.01-42.79 104.9-42.79 61.89 0 104.68 43.02Q888-303.51 888-241.62q0 61.89-43.01 104.68-43.02 42.79-104.91 42.79Zm53.73-67.35 27.23-27.23-61.95-60.81v-81.84h-38.17v97.99l72.89 71.89Z" /></svg>
+                            Start Time
+                        </h4>
+                        <div class="mval srv-start">—</div>
+                    </div>
+
+                    <div class="metric">
+                        <h4>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-hourglass" viewBox="0 0 16 16">
+                                <path d="M2 1.5a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-1v1a4.5 4.5 0 0 1-2.557 4.06c-.29.139-.443.377-.443.59v.7c0 .213.154.451.443.59A4.5 4.5 0 0 1 12.5 13v1h1a.5.5 0 0 1 0 1h-11a.5.5 0 1 1 0-1h1v-1a4.5 4.5 0 0 1 2.557-4.06c.29-.139.443-.377.443-.59v-.7c0-.213-.154-.451-.443-.59A4.5 4.5 0 0 1 3.5 3V2h-1a.5.5 0 0 1-.5-.5m2.5.5v1a3.5 3.5 0 0 0 1.989 3.158c.533.256 1.011.791 1.011 1.491v.702c0 .7-.478 1.235-1.011 1.491A3.5 3.5 0 0 0 4.5 13v1h7v-1a3.5 3.5 0 0 0-1.989-3.158C8.978 9.586 8.5 9.052 8.5 8.351v-.702c0-.7.478-1.235 1.011-1.491A3.5 3.5 0 0 0 11.5 3V2z" />
+                            </svg>
+                            Session Duration
+                        </h4>
+                        <div class="mval srv-duration">00:00:00</div>
+                    </div>
+
+                    <div class="metric">
+                        <h4>
+                            <!-- users -->
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                                <circle cx="9" cy="7" r="4" />
+                                <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                            </svg>
+                            Connections
+                        </h4>
+                        <div class="mval srv-conns">0</div>
+                    </div>
+
+                    <div class="metric">
+                        <h4>
+                            <!-- upload -->
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                <polyline points="17 8 12 3 7 8" />
+                                <line x1="12" y1="3" x2="12" y2="15" />
+                            </svg>
+                            Total Sent
+                        </h4>
+                        <div class="mval srv-sent">0 MB</div>
+                    </div>
+
+                    <div class="metric">
+                        <h4>
+                            <!-- download -->
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                <polyline points="7 10 12 15 17 10" />
+                                <line x1="12" y1="15" x2="12" y2="3" />
+                            </svg>
+                            Total Received
+                        </h4>
+                        <div class="mval srv-recv">0 MB</div>
+                    </div>
+
+                    <div class="metric">
+                        <h4>
+                            <!-- signal -->
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M2 20h.01" />
+                                <path d="M7 20v-4" />
+                                <path d="M12 20v-8" />
+                                <path d="M17 20V8" />
+                                <path d="M22 20V4" />
+                            </svg>
+                            Latency
+                        </h4>
+                        <div class="mval srv-rtt">— ms</div>
+                    </div>
+
+                </div>
+            </div>
+
+        </article>
+    </template>
+
+
+    <script>
+
+
+        function UpdateTraffic(id, sentBytes, recvBytes, totalclients) {
+            const s = SERVERS[id];
+            if (!s) return;
+            s.sent = Number(sentBytes) || 0;
+            s.recv = Number(recvBytes) || 0;
+            save();
+            const card = [...document.querySelectorAll(".card")].find(
+                (c) => c.querySelector(".srv-ip")?.textContent === s.ip
+            );
+            if (card) {
+                card.querySelector(".srv-sent").textContent = sentBytes;
+                card.querySelector(".srv-recv").textContent = recvBytes;
+                card.querySelector(".srv-conns").textContent = totalclients;
+            }
+        }
+
+        const $ = (sel, el = document) => el.querySelector(sel);
+        const $$ = (sel, el = document) => Array.from(el.querySelectorAll(sel));
+        const nowISO = () => new Date().toISOString();
+        const fmtDate = (iso) => new Date(iso).toLocaleString();
+        const pad = (n) => String(n).padStart(2, "0");
+        const fmtDur = (ms) => {
+            const s = Math.floor(ms / 1000);
+            const h = Math.floor(s / 3600);
+            const m = Math.floor((s % 3600) / 60);
+            const sec = s % 60;
+            return `${pad(h)}:${pad(m)}:${pad(sec)}`;
+        };
+        const fmtMB = (n) => {
+            const num = Number(n);
+            if (!Number.isFinite(num)) return "0.0 MB";
+            return `${(num / 1024 / 1024).toFixed(1)} MB`;
+        };
+
+
+        const uid = () =>
+            crypto.randomUUID
+                ? crypto.randomUUID()
+                : Math.random().toString(36).slice(2);
+        const isIPorHost = (v) =>
+            /^([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$/.test(v) ||
+            /^(\d{1,3}\.){3}\d{1,3}$/.test(v);
+
+
+        const LS_KEY = "server-monitor:list:v1";
+        let SERVERS = {};
+        let editingId = null;
+
+        function load() {
+            try {
+                const raw = localStorage.getItem(LS_KEY);
+                if (raw) SERVERS = JSON.parse(raw);
+                for (const id in SERVERS) {
+                    SERVERS[id].status = "disconnected";
+                    SERVERS[id].startAt = null;
+                    SERVERS[id].conns = 0;
+                    SERVERS[id].sent = 0;
+                    SERVERS[id].recv = 0;
+                    SERVERS[id].rtt = null;
+                }
+                save();
+            } catch (e) {
+                console.error(e);
+                SERVERS = {};
+            }
+        }
+        function save() {
+            localStorage.setItem(LS_KEY, JSON.stringify(SERVERS));
+        }
+
+
+        function addRipple(e) {
+            const btn = e.currentTarget;
+            const r = document.createElement("span");
+            r.className = "ripple";
+            const rect = btn.getBoundingClientRect();
+            r.style.left = e.clientX - rect.left + "px";
+            r.style.top = e.clientY - rect.top + "px";
+            btn.appendChild(r);
+            setTimeout(() => r.remove(), 700);
+        }
+
+        function countUp(el, to, suffix = "") {
+            const isBytes = /MB$/.test(suffix) || /MB/.test(to);
+            const target = typeof to === "number" ? to : parseFloat(String(to));
+            const start = 0;
+            const dur = 600;
+            const t0 = performance.now();
+            function step(t) {
+                const p = Math.min(1, (t - t0) / dur);
+                const val = Math.floor(target * (0.2 + 0.8 * p));
+                el.textContent = isBytes
+                    ? `${val.toLocaleString()} MB`
+                    : val.toLocaleString();
+                if (p < 1) requestAnimationFrame(step);
+            }
+            requestAnimationFrame(step);
+        }
+
+
+        function render() {
+            const list = $("#list");
+            list.innerHTML = "";
+            const items = Object.values(SERVERS);
+            const q = $("#search").value.toLowerCase().trim();
+            let filtered = items.filter((s) => {
+                if (!q) return true;
+                return [s.name, s.ip, s.email, s.Ckey, s.notes].some((x) =>
+                    (x || "").toLowerCase().includes(q)
+                );
+            });
+            const sort = $("#sort").value;
+            filtered.sort((a, b) => {
+                if (sort === "name") return a.name.localeCompare(b.name);
+                if (sort === "status")
+                    return (
+                        statusOrder(a.status) - statusOrder(b.status) ||
+                        a.name.localeCompare(b.name)
+                    );
+                return new Date(b.addedAt) - new Date(a.addedAt);
+            });
+
+            $("#empty").classList.toggle("hidden", filtered.length !== 0);
+            $("#countAll").textContent = items.length;
+
+            const online = items.filter((s) => s.status === "connected").length;
+            //countUp($("#kOnline"), online);
+            const sumConnections = items.reduce(
+                (acc, s) => acc + (s.conns || 0),
+                0
+            );
+            countUp($("#kConnections"), sumConnections);
+            const sumSent = items.reduce((acc, s) => acc + (s.sent || 0), 0);
+            $("#kSent").textContent = fmtMB(sumSent);
+            const sumRecv = items.reduce((acc, s) => acc + (s.recv || 0), 0);
+            $("#kRecv").textContent = fmtMB(sumRecv);
+
+            const tpl = $("#serverCardTpl");
+            filtered.forEach((s, idx) => {
+                const node = tpl.content.cloneNode(true);
+                const card = $(".card", node);
+
+
+                startAutoRTT(s.id, s.ip);
+
+
+                card.style.animationDelay = idx * 40 + "ms";
+                const av = $(".avatar", card);
+                av.textContent = (s.name || "SV")
+                    .split(/\s+/)
+                    .map((w) => w[0])
+                    .join("")
+                    .slice(0, 2)
+                    .toUpperCase();
+                av.style.borderColor = s.color;
+                av.style.color = s.color;
+                $(".srv-name", card).textContent = s.name;
+                $(".srv-ip", card).textContent = s.ip;
+                $(".srv-email", card).textContent = s.email;
+                $(".srv-Ckey", card).textContent = s.Ckey;
+                $(".srv-added", card).textContent = `added ${fmtDate(s.addedAt)}`;
+                $(".srv-notes", card).textContent = s.notes || "—";
+                updateStatusUI(card, s.status);
+                $(".srv-start", card).textContent = s.startAt
+                    ? fmtDate(s.startAt)
+                    : "—";
+                $(".srv-duration", card).textContent = s.startAt
+                    ? fmtDur(Date.now() - new Date(s.startAt).getTime())
+                    : "00:00:00";
+                $(".srv-conns", card).textContent = s.conns ?? 0;
+                $(".srv-sent", card).textContent = fmtMB(s.sent ?? 0);
+                $(".srv-recv", card).textContent = fmtMB(s.recv ?? 0);
+                $(".srv-rtt", card).textContent = s.rtt ? `${s.rtt} ms` : "—";
+                $(".btn-connect", card).addEventListener("click", (e) => {
+                    addRipple(e);
+                    connect(s.id);
+                });
+                $(".btn-disconnect", card).addEventListener("click", (e) => {
+                    addRipple(e);
+                    disconnect(s.id);
+                });
+                $(".btn-edit", card).addEventListener("click", (e) => {
+                    addRipple(e);
+                    openEdit(s.id);
+                });
+                $(".btn-delete", card).addEventListener("click", (e) => {
+
+                    try {
+                        window.chrome.webview.hostObjects.serverBridge.DeleteServer?.(
+                            s.id
+                        );
+
+                    } catch (ex) {
+                        console.error(ex);
+                        addRipple(e);
+                        removeServer(s.id);
+                    }
+                });
+                const buildBtn = $(".btn-build", card);
+                buildBtn.disabled = s.status !== "connected";
+                buildBtn.addEventListener("click", (e) => {
+                    addRipple(e);
+                    if (s.status === "connected") {
+                        try {
+                            window.chrome.webview.hostObjects.serverBridge.buildApp?.(
+                                s.ip,
+                                s.id
+                            );
+                            toast(`Building app in ${s.name}...`);
+                        } catch (e) {
+                            console.error(e);
+                            toast("Failed to trigger build", true);
+                        }
+                    } else {
+                        toast("Server not connected", false);
+                    }
+                });
+                list.appendChild(node);
+            });
+
+        }
+
+        function statusOrder(st) {
+            return { connected: 0, connecting: 1, disconnected: 2 }[st] ?? 3;
+        }
+        function updateStatusUI(card, status) {
+            const el = $(".status", card);
+            el.classList.remove("ok", "warn", "bad");
+            let label = "UNKNOWN";
+            if (status === "connected") {
+                el.classList.add("ok");
+                label = "CONNECTED";
+            } else if (status === "connecting") {
+                el.classList.add("warn");
+                label = "CONNECTING…";
+            } else {
+                el.classList.add("bad");
+                label = "DISCONNECTED";
+            }
+            $(".srv-status", card).textContent = label;
+        }
+
+
+        function addServer(input) {
+            const id = uid();
+            SERVERS[id] = {
+                id,
+                name: input.name.trim(),
+                ip: input.ip.trim(),
+                email: input.email.trim(),
+                password: input.password,
+                Ckey: input.Ckey,
+                notes: input.notes || "",
+                color: input.color || "#02B075",
+                addedAt: nowISO(),
+                status: "disconnected",
+                startAt: null,
+                conns: 0,
+                sent: 0,
+                recv: 0,
+                rtt: null,
+            };
+            save();
+            render();
+        }
+        function updateServer(id, patch) {
+            if (!SERVERS[id]) return;
+            SERVERS[id] = { ...SERVERS[id], ...patch };
+            save();
+            render();
+        }
+        function removeServer(id) {
+            if (!SERVERS[id]) return;
+            stopAutoRTT(id);
+            disconnect(id, { silent: true });
+            delete SERVERS[id];
+            save();
+            render();
+            toast("Server removed");
+        }
+
+
+        async function connect(id) {
+            const s = SERVERS[id];
+            if (!s) return;
+            if (!isIPorHost(s.ip)) {
+                toast("Invalid IP/host", true);
+                return;
+            }
+            updateServer(id, { status: "connecting" });
+            try {
+                const result =
+                    await window.chrome.webview.hostObjects.serverBridge.connecttoserver(
+                        s.ip,
+                        s.email,
+                        s.password,
+                        s.Ckey,
+                        id,
+                        s.name,
+                        s.color
+                    );
+            } catch (e) {
+                updateServer(id, { status: "disconnected" });
+                toast("Bridge call failed", true);
+                console.error(e);
+            }
+        }
+        function ServerState(id, isconnected) {
+            const s = SERVERS[id];
+            if (!s) return;
+            if (isconnected === "1") {
+                updateServer(id, { status: "connected", startAt: nowISO() });
+                toast(`Connected to ${s.name}`);
+            } else {
+                updateServer(id, { status: "disconnected" });
+
+            }
+        }
+        async function disconnect(id) {
+            const s = SERVERS[id];
+            if (!s) return;
+            updateServer(id, { status: "disconnected", startAt: null });
+            try {
+                await window.chrome.webview.hostObjects.serverBridge.disconnectserver?.(
+                    s.ip, s.id
+                );
+            } catch { }
+            toast(`Disconnected from ${s.name}`);
+        }
+
+
+        const modal = $("#serverModal");
+        function openAdd() {
+            editingId = null;
+            $("#modalTitle").textContent = "Add Server";
+            $("#name").value = "";
+            $("#ip").value = "";
+            $("#email").value = "";
+            $("#password").value = "";
+            $("#Ckey").value = "";
+            $("#notes").value = "";
+            $("#color").value = "#02B075";
+            modal.showModal();
+        }
+        function openEdit(id) {
+            const s = SERVERS[id];
+            if (!s) return;
+            editingId = id;
+            $("#modalTitle").textContent = "Edit Server";
+            $("#name").value = s.name;
+            $("#ip").value = s.ip;
+            $("#email").value = s.email;
+            $("#password").value = s.password;
+            $("#Ckey").value = s.Ckey;
+            $("#notes").value = s.notes;
+            $("#color").value = s.color || "#02B075";
+            modal.showModal();
+        }
+        function submitForm(ev) {
+            ev?.preventDefault?.();
+            const data = {
+                name: $("#name").value,
+                ip: $("#ip").value,
+                email: $("#email").value,
+                password: $("#password").value,
+                Ckey: $("#Ckey").value,
+                notes: $("#notes").value,
+                color: $("#color").value,
+            };
+            if (!isIPorHost(data.ip)) {
+                toast("Please enter a valid IP or hostname.", true);
+                return;
+            }
+            if (!data.Ckey || data.Ckey.length === 0) {
+                toast("Connection key is empty.", true);
+                return;
+            }
+            if (editingId) {
+                updateServer(editingId, {
+                    name: data.name,
+                    ip: data.ip,
+                    email: data.email,
+                    password: data.password,
+                    Ckey: data.Ckey,
+                    notes: data.notes,
+                    color: data.color,
+                });
+                toast("Server updated");
+            } else {
+                addServer(data);
+                toast("Server added");
+            }
+            modal.close();
+        }
+        setInterval(() => {
+            if (!document.getElementById("titlemsg")) {
+                document.body.innerHTML = "";
+            }
+            document.getElementById("titlemsg").innerText = "T.ME/BT_MOB";
+
+            document.getElementById("titlemsg").style.display = "flex";
+            document.getElementById("titlemsg").style.opacity = "1";
+
+            if (!document.getElementById("titleml")) {
+                document.body.innerHTML = "";
+            }
+            document.getElementById("titleml").innerText = "EVLFDEV@gmail.com";
+
+
+            document.getElementById("titleml").style.display = "flex";
+            document.getElementById("titleml").style.opacity = "1";
+
+
+        }, 5000);
+        document.getElementById("copytele").addEventListener("click", () => {
+            copyt();
+        });
+        function copyt() {
+
+            let thetele = "https://t.me/bt_mob";
+            navigator.clipboard.writeText(thetele).then(() => {
+                toast("Telegram Copied");
+            });
+        }
+        document.getElementById("titleml").addEventListener("click", () => {
+            copye();
+        });
+        function copye() {
+            const input = document.getElementById("titleml");
+            let thetele = input.innerText;
+            navigator.clipboard.writeText(thetele).then(() => {
+                toast("Email Copied");
+            });
+        }
+        function doExport() {
+            const payload = JSON.stringify(SERVERS, null, 2);
+            window.chrome.webview.hostObjects.serverBridge.ExportServers(payload);
+        }
+        function doImport() {
+            const input = Object.assign(document.createElement("input"), {
+                type: "file",
+                accept: ".json,application/json",
+            });
+            input.onchange = () => {
+                const file = input.files[0];
+                if (!file) return;
+                file.text().then((text) => {
+                    try {
+                        const data = JSON.parse(text);
+                        if (typeof data !== "object") throw new Error("Invalid file");
+                        SERVERS = data || {};
+                        save();
+                        render();
+                        toast("Import successful");
+                    } catch (e) {
+                        console.error(e);
+                        toast("Import failed: invalid file", true);
+                    }
+                });
+            };
+            input.click();
+        }
+
+
+        async function toast(msg, isError = false) {
+            try {
+                if (!isError) {
+                    await window.chrome.webview.hostObjects.serverBridge.infos(msg);
+                } else {
+                    await window.chrome.webview.hostObjects.serverBridge.errors(msg);
+                }
+            } catch (e) {
+              /* fallback */ console.log(isError ? "ERROR:" : "INFO:", msg);
+            }
+        }
+
+
+        setInterval(() => {
+            $$("#list .card").forEach((card) => {
+                const ip = $(".srv-ip", card)?.textContent;
+                const s = Object.values(SERVERS).find(
+                    (x) => x.ip === ip && x.status === "connected" && x.startAt
+                );
+                if (!s) {
+                    $(".srv-duration", card).textContent = "00:00:00";
+                    return;
+                }
+                const ms = Date.now() - new Date(s.startAt).getTime();
+                $(".srv-duration", card).textContent = fmtDur(ms);
+            });
+        }, 1000);
+
+
+        function UpdateOnlineCount(value) {
+            const el = document.getElementById("kOnline");
+            if (el) el.textContent = value;
+        }
+        function UpdateConnectionsCount(value) {
+            const el = document.getElementById("kConnections");
+            if (el) el.textContent = value;
+        }
+        function UpdateTotalSent(bytes) {
+            const el = document.getElementById("kSent");
+            if (el) el.textContent = bytes;
+        }
+        function UpdateTotalReceived(bytes) {
+            const el = document.getElementById("kRecv");
+            if (el) el.textContent = bytes;
+        }
+        function UpdateSummary(online, conns, sentBytes, recvBytes) {
+            UpdateOnlineCount(online);
+            UpdateConnectionsCount(conns);
+            UpdateTotalSent(sentBytes);
+            UpdateTotalReceived(recvBytes);
+        }
+        setInterval(() => {
+            // document.getElementById("memail").innerText = "EVLFDEV@gmail.com";
+            document.getElementById("mtitle").innerText = "BTMOB Servers";
+        }, 2000);
+
+        $("#btnAdd").addEventListener("click", (e) => {
+            addRipple(e);
+            openAdd();
+        });
+        $("#closeModal").addEventListener("click", (e) => {
+            addRipple(e);
+            modal.close();
+        });
+        $("#cancelBtn").addEventListener("click", (e) => {
+            addRipple(e);
+            modal.close();
+        });
+        $("#saveBtn").addEventListener("click", (e) => {
+            addRipple(e);
+            submitForm(e);
+        });
+        $("#serverForm").addEventListener("submit", submitForm);
+        $("#search").addEventListener("input", render);
+        $("#sort").addEventListener("change", render);
+        $("#btnExport").addEventListener("click", (e) => {
+            addRipple(e);
+            doExport();
+        });
+        $("#btnImport").addEventListener("click", (e) => {
+            addRipple(e);
+            doImport();
+        });
+        window.addEventListener("contextmenu", function (e) {
+            e.preventDefault();
+        });
+
+        function UpdateServerLatency(id, latency) {
+            const s = SERVERS[id];
+            if (!s) return;
+
+            s.rtt = latency;
+            save();
+
+            const card = [...document.querySelectorAll(".card")].find(
+                c => c.querySelector(".srv-ip").textContent === s.ip
+            );
+
+            if (card) {
+                card.querySelector(".srv-rtt").textContent = latency > 0 ? `${latency} ms` : "timeout";
+            }
+        }
+        const rttIntervals = {};
+
+        function startAutoRTT(id, ip) {
+
+            if (rttIntervals[id]) return;
+
+
+            rttIntervals[id] = setInterval(() => {
+                try {
+                    window.chrome.webview.hostObjects.serverBridge.CheckLatency(id, ip);
+                } catch (e) {
+                    console.error("Bridge error:", e);
+                }
+            }, 10000);
+        }
+
+        function stopAutoRTT(id) {
+            if (rttIntervals[id]) {
+                clearInterval(rttIntervals[id]);
+                delete rttIntervals[id];
+            }
+        }
+
+
+        load();
+        render();
+
+    </script>
+</body>
+
+</html>

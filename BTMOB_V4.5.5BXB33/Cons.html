@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Connection Logs</title>
+
+    <style>
+            :root {
+                --bg: #060a0f;
+                --panel: #0e1621;
+                --muted: #91a3b6;
+                --text: #e6edf3;
+                --accent: #02b075;
+                --accent-2: #26d8a7;
+                --danger: #e21014;
+                --border: #1a2533;
+                --radius: 14px;
+            }
+
+            * {
+                box-sizing: border-box;
+                -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+                -webkit-tap-highlight-color: transparent;
+                -webkit-user-select: none;
+                -khtml-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
+            }
+
+            /* GENERAL */
+            body {
+                margin: 0;
+                padding: 5px;
+                background: var(--bg);
+                color: var(--text);
+                overflow: hidden;
+                font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+            }
+
+            .wrap {
+                background: transparent;
+                padding: 5px;
+                border-radius: var(--radius);
+                
+            }
+
+            *::-webkit-scrollbar {
+                width: 6px;
+                height: 6px;
+            }
+
+            *::-webkit-scrollbar-thumb {
+                background: linear-gradient(var(--accent), var(--accent-2));
+                border-radius: 8px;
+            }
+
+            /* HEADER */
+            .header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                flex-wrap: wrap;
+                gap: 12px;
+                margin-bottom: 6px;
+                padding: 4px 4px 8px;
+            }
+
+            .title {
+                font-size: 1.4rem;
+                font-weight: 700;
+                letter-spacing: 0.02em;
+                background: linear-gradient(120deg, var(--accent), var(--accent-2));
+                -webkit-background-clip: text;
+                color: transparent;
+            }
+
+            /* LEFT SIDE BRAND */
+            .leftside {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                flex-shrink: 0;
+            }
+
+            .logo {
+                width: 44px;
+                height: 44px;
+                border-radius: 14px;
+                display: grid;
+                place-items: center;
+                background: conic-gradient(from 220deg at 50% 50%, rgba(2, 176, 117, 0.25), rgba(38, 216, 167, 0.15), rgba(2, 176, 117, 0.25));
+                border: 1px solid rgba(7, 197, 133, 0.45);
+            }
+
+            /* SEARCH BOX */
+            .searchbox {
+                position: relative;
+            }
+
+                .searchbox input {
+                    padding: 8px 34px;
+                    background: rgba(12, 18, 32, 0.96);
+                    border: 1px solid rgba(255, 255, 255, 0.08);
+                    border-radius: 999px;
+                    color: #d5deea;
+                    font-size: 0.85rem;
+                    outline: none;
+                    min-width: 210px;
+                    box-shadow: 0 0 0 1px transparent;
+                }
+
+                    .searchbox input:focus {
+                        border-color: var(--accent);
+                        background: rgba(12, 22, 40, 0.98);
+                        box-shadow: 0 0 0 1px rgba(7, 197, 133, 0.45), 0 0 24px rgba(7, 197, 133, 0.32);
+                        transform: translateY(-1px);
+                    }
+
+                .searchbox svg {
+                    position: absolute;
+                    left: 10px;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    width: 16px;
+                    height: 16px;
+                    fill: #7b8596;
+                    pointer-events: none;
+                }
+
+            /* HEADER SECOND ROW */
+            .secondrow {
+                width: 100%;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+                align-items: center;
+                justify-content: space-between;
+                padding: 10px;
+                box-sizing: border-box;
+            }
+
+            .thirdrow {
+                width: 100%;
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                justify-content: space-between;
+                padding: 10px;
+                box-sizing: border-box;
+            }
+
+            /* SERVER SWITCH (pills instead of select) */
+            .server-switch {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .server-pill {
+                position: relative;
+                padding: 6px 14px 6px 24px;
+                border-radius: 999px;
+                border: 1px solid var(--border);
+                background: #0b1420;
+                color: var(--muted);
+                font-size: 0.78rem;
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                cursor: pointer;
+                transition: 0.18s ease;
+                outline: none;
+            }
+
+                .server-pill::before {
+                    content: "";
+                    position: absolute;
+                    left: 9px;
+                    width: 8px;
+                    height: 8px;
+                    border-radius: 999px;
+                    background: var(--pill-color, var(--accent-2));
+                }
+
+                .server-pill:hover {
+                    color: var(--accent-2);
+                    border-color: var(--accent-2);
+                    box-shadow: 0 0 10px var(--accent-2);
+                    background: #101a28;
+                }
+
+                .server-pill.active {
+                    color: var(--accent-2);
+                    border-color: var(--accent-2);
+                    background: radial-gradient(circle at 0 0, rgba(38, 216, 167, 0.3), #0b1522);
+                }
+
+            .filter-summary {
+                font-size: 0.78rem;
+                color: var(--muted);
+                opacity: 0.9;
+            }
+
+            /* .right-controls {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-end;
+          gap: 4px;
+        } */
+
+            /* BUTTONS */
+            .header-buttons {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .btn {
+                width: 110px;
+                height: 60px;
+                font-size: 10.5px;
+                font-weight: bold;
+                background: var(--panel);
+                border: 1px solid var(--border);
+                border-radius: var(--radius);
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                gap: 4px;
+                color: var(--muted);
+                cursor: pointer;
+                transition: 0.2s ease;
+            }
+
+                .btn:hover {
+                    color: var(--accent-2);
+                    fill: var(--accent-2);
+                    border-color: var(--accent-2);
+                    box-shadow: 0 0 10px var(--accent-2);
+                }
+
+                .btn svg {
+                    width: 18px;
+                    height: 18px;
+                }
+
+            /* TOGGLES */
+            .toggles {
+                display: flex;
+                gap: 40px;
+                align-items: center;
+                justify-content: flex-end;
+                flex-wrap: wrap;
+            }
+
+            .toggle {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                font-size: 0.75rem;
+                color: var(--muted);
+                cursor: pointer;
+                user-select: none;
+            }
+
+                .toggle input {
+                    display: none;
+                }
+
+            .toggle-track {
+                width: 32px;
+                height: 18px;
+                border-radius: 999px;
+                background: #111827;
+                border: 1px solid var(--border);
+                padding: 2px;
+                display: flex;
+                align-items: center;
+                transition: 0.18s ease;
+                box-sizing: border-box;
+            }
+
+            .toggle-thumb {
+                width: 12px;
+                height: 12px;
+                border-radius: 999px;
+                background: #6b7280;
+                transition: 0.18s ease;
+            }
+
+            .toggle input:checked + .toggle-track {
+                background: linear-gradient(90deg, var(--accent), var(--accent-2));
+                border-color: var(--accent-2);
+                box-shadow: 0 0 10px rgba(38, 216, 167, 0.7);
+            }
+
+                .toggle input:checked + .toggle-track .toggle-thumb {
+                    transform: translateX(12px);
+                    background: #0b1120;
+                }
+
+            .toggle-label {
+                opacity: 0.9;
+            }
+
+            /* LOG TABLE */
+            .log-table {
+                margin-top: 6px;
+                border-radius: 12px;
+                border: 1px solid rgba(255, 255, 255, 0.06);
+                background: linear-gradient(145deg, #0d1722 0%, #0a1119 100%);
+                max-height: 65vh;
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .log-header,
+            .log-row {
+                display: grid;
+                grid-template-columns: 40px 2.2fr 1.4fr 1.3fr 0.9fr;
+                align-items: center;
+                gap: 25px;
+                padding: 8px 10px;
+                font-size: 0.78rem;
+            }
+
+            .log-header {
+                position: sticky;
+                top: 0;
+                z-index: 1;
+                background: rgba(6, 10, 15, 0.98);
+                border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+                text-transform: uppercase;
+                letter-spacing: 0.06em;
+                color: var(--muted);
+                font-size: 0.7rem;
+            }
+
+            .log-body {
+                overflow-y: auto;
+            }
+
+            .log-row {
+                border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+                cursor: default;
+                transition: 0.16s ease;
+            }
+
+                .log-row:last-child {
+                    border-bottom: none;
+                }
+
+                .log-row:hover {
+                    background: radial-gradient(circle at top left, rgba(38, 216, 167, 0.16), transparent 60%);
+                }
+
+            .log-select {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                width: 50px;
+                justify-content: flex-start;
+            }
+
+            .log-header-check {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .log-icon {
+                width: 20px;
+                height: 20px;
+                border-radius: 6px;
+                object-fit: cover;
+                background: transparent;
+            }
+
+            .conn-main {
+                display: flex;
+                flex-direction: column;
+                gap: 2px;
+            }
+
+            .conn-string {
+                font-size: 0.8rem;
+                color: #eaf2ff;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .conn-meta {
+                font-size: 0.7rem;
+                color: var(--muted);
+                display: flex;
+                gap: 6px;
+                opacity: 0.9;
+            }
+
+                .conn-meta span {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 4px;
+                }
+
+            .pill-mini {
+                padding: 2px 6px;
+                border-radius: 999px;
+                border: 1px solid rgba(255, 255, 255, 0.12);
+                font-size: 0.68rem;
+                text-transform: uppercase;
+                letter-spacing: 0.06em;
+                color: var(--muted);
+            }
+
+            .client-cell {
+                font-size: 0.78rem;
+                color: var(--accent-2);
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .addr-cell {
+                font-size: 0.78rem;
+                color: var(--muted);
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .time-cell {
+                font-size: 0.76rem;
+                color: #8f9bb0;
+                white-space: nowrap;
+            }
+
+            /* SMALL CHECKBOX */
+            .checkbox-sm {
+                width: 16px;
+                height: 16px;
+                appearance: none;
+                background: #050814;
+                border: 1px solid #273449;
+                border-radius: 4px;
+                cursor: pointer;
+                transition: background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, transform 0.12s ease;
+                display: grid;
+                place-items: center;
+            }
+
+                .checkbox-sm::before {
+                    content: "";
+                    width: 10px;
+                    height: 10px;
+                    border-radius: 3px;
+                    transform: scale(0);
+                    transition: transform 0.18s ease;
+                    background: linear-gradient(135deg, #00ffb0, #08c983);
+                    box-shadow: 0 0 8px rgba(0, 255, 176, 0.6);
+                }
+
+                .checkbox-sm:checked {
+                    border-color: rgba(0, 255, 176, 0.9);
+                    background: radial-gradient(circle at 0 0, rgba(0, 255, 189, 0.3), #041215);
+                    box-shadow: 0 0 0 1px rgba(0, 255, 189, 0.55);
+                    transform: translateY(-1px);
+                }
+
+                    .checkbox-sm:checked::before {
+                        transform: scale(1);
+                    }
+
+            @media (max-width: 800px) {
+
+                .log-header,
+                .log-row {
+                    grid-template-columns: 40px 2.4fr 1.4fr 1.2fr;
+                }
+
+                .time-cell {
+                    display: none;
+                }
+            }
+
+            @media (max-width: 640px) {
+                .header {
+                    align-items: flex-start;
+                }
+
+                .searchbox input {
+                    width: 100%;
+                    min-width: 0;
+                }
+
+                .secondrow {
+                    align-items: flex-start;
+                }
+
+                /* .right-controls {
+            align-items: flex-start;
+          } */
+            }
+    </style>
+</head>
+
+<body onselectstart="return false;" ondragstart="return false;" oncontextmenu="return false;">
+    <div class="wrap">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="leftside">
+                <div class="logo">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="M624-144v-108H444v-384H336v108H96v-288h240v108h288v-108h240v288H624v-108H516v312h108v-108h240v288H624Z" /></svg>
+                </div>
+                <div class="title" data-t="title">Connection Logs</div>
+            </div>
+
+            <!-- SEARCH -->
+            <div class="searchbox">
+                <svg style="opacity: 0.7" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                     class="bi bi-search" viewBox="0 0 16 16">
+                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+                </svg>
+
+                <input id="searchInput" placeholder="Search..." data-t-placeholder="search" />
+            </div>
+        </div>
+
+        <!-- SECOND ROW (server pills + buttons + toggles) -->
+        <div class="secondrow">
+            <div class="server-switch" id="serverSwitch">
+                <button class="server-pill active" data-server="all" style="--pill-color:#22c55e" data-t="all_servers">All Servers</button>
+            </div>
+
+            <div class="header-buttons">
+                <button class="btn" id="btnDeleteSelected">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="20px"
+                         viewBox="0 -960 960 960" width="20px" fill="Currentcolor">
+                        <path d="M312-144q-29.7 0-50.85-21.15Q240-186.3 240-216v-480h-48v-72h192v-48h192v48h192v72h-48v479.57Q720-186 698.85-165T648-144H312Zm72-144h72v-336h-72v336Zm120 0h72v-336h-72v336Z" />
+                    </svg>
+                    <span data-t="btn_delete_selected">Delete Selected</span>
+                </button>
+                <button class="btn" id="btnClearAll">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="20px"
+                         viewBox="0 -960 960 960" width="20px" fill="Currentcolor">
+                        <path d="M144-288v-72h528v72H144Zm72-156v-72h528v72H216Zm72-156v-72h528v72H288Z" />
+                    </svg>
+                    <span id="btnClearAll">Clear All</span>
+                </button>
+            </div>
+
+            <!-- <div class="right-controls">
+
+            </div> -->
+        </div>
+        <div class="thirdrow">
+            <div class="toggles">
+                <label class="toggle">
+                    <input type="checkbox" id="toggleAutoScroll" checked />
+                    <span class="toggle-track">
+                        <span class="toggle-thumb"></span>
+                    </span>
+                    <span class="toggle-label" data-t="auto_scroll">Auto Scroll</span>
+                </label>
+                <label class="toggle">
+                    <input type="checkbox" id="toggleAutoClear" checked />
+                    <span class="toggle-track">
+                        <span class="toggle-thumb"></span>
+                    </span>
+                    <span class="toggle-label" data-t="auto_clear">Auto Clear  </span>
+                </label>
+            </div>
+            <div class="filter-summary" id="filterSummary">
+                Showing: All Servers
+            </div>
+        </div>
+        <!-- LOG TABLE -->
+        <div class="log-table">
+            <div class="log-header">
+                <div class="log-header-check">
+                    <input type="checkbox" id="selectAllCheckbox" class="checkbox-sm" />
+                </div>
+                <div data-t="th_connection">Connection</div>
+                <div data-t="th_client">Client</div>
+                <div data-t="th_address">Address</div>
+                <div data-t="th_time">Time</div>
+            </div>
+            <div class="log-body" id="logBody"></div>
+        </div>
+    </div>
+
+    <script>
+        /* =========================
+           MULTI-LANGUAGE SYSTEM
+        ========================= */
+        const LANG_TEXT = {
+            en: {
+                title: "Connection Logs",
+                search: "Search...",
+                auto_scroll: "Auto Scroll",
+                auto_clear: "Auto Clear  ",
+                btn_delete_selected: "Delete Selected",
+                btn_clear_all: "Clear All",
+                th_connection: "Connection",
+                th_client: "Client",
+                th_address: "Address",
+                th_time: "Time",
+                all_servers: "All Servers"
+            },
+            ar: {
+                title: "سجلات الاتصال",
+                search: "بحث...",
+                auto_scroll: "تمرير تلقائي",
+                auto_clear: "مسح تلقائي  ",
+                btn_delete_selected: "حذف المحدد",
+                btn_clear_all: "مسح الكل",
+                th_connection: "الاتصال",
+                th_client: "العميل",
+                th_address: "العنوان",
+                th_time: "الوقت",
+                all_servers: "كل الخوادم"
+            },
+            zh: {
+                title: "连接日志",
+                search: "搜索...",
+                auto_scroll: "自动滚动",
+                auto_clear: "自动清除（50）",
+                btn_delete_selected: "删除所选",
+                btn_clear_all: "清除全部",
+                th_connection: "连接",
+                th_client: "客户端",
+                th_address: "地址",
+                th_time: "时间",
+                all_servers: "所有服务器"
+            },
+            tr: {
+                title: "Bağlantı Kayıtları",
+                search: "Ara...",
+                auto_scroll: "Otomatik Kaydır",
+                auto_clear: "Otomatik Temizle  ",
+                btn_delete_selected: "Seçileni Sil",
+                btn_clear_all: "Tümünü Temizle",
+                th_connection: "Bağlantı",
+                th_client: "İstemci",
+                th_address: "Adres",
+                th_time: "Zaman",
+                all_servers: "Tüm Sunucular"
+            },
+            ru: {
+                title: "Журналы подключений",
+                search: "Поиск...",
+                auto_scroll: "Автопрокрутка",
+                auto_clear: "Автоочистка  ",
+                btn_delete_selected: "Удалить выбранные",
+                btn_clear_all: "Очистить всё",
+                th_connection: "Подключение",
+                th_client: "Клиент",
+                th_address: "Адрес",
+                th_time: "Время",
+                all_servers: "Все серверы"
+            },
+            es: {
+                title: "Registros de Conexión",
+                search: "Buscar...",
+                auto_scroll: "Desplazamiento automático",
+                auto_clear: "Borrado automático  ",
+                btn_delete_selected: "Eliminar seleccionados",
+                btn_clear_all: "Limpiar todo",
+                th_connection: "Conexión",
+                th_client: "Cliente",
+                th_address: "Dirección",
+                th_time: "Hora",
+                all_servers: "Todos los servidores"
+            },
+            pt: {
+                title: "Registros de Conexão",
+                search: "Pesquisar...",
+                auto_scroll: "Rolagem automática",
+                auto_clear: "Limpeza automática  ",
+                btn_delete_selected: "Excluir selecionados",
+                btn_clear_all: "Limpar tudo",
+                th_connection: "Conexão",
+                th_client: "Cliente",
+                th_address: "Endereço",
+                th_time: "Hora",
+                all_servers: "Todos os servidores"
+            }
+        };
+
+
+        function applyLang() {
+            let lang = document.documentElement.lang || "en";
+            let t = LANG_TEXT[lang] || LANG_TEXT.en;
+
+            document.querySelectorAll("[data-t]").forEach(el => {
+                el.textContent = t[el.getAttribute("data-t")] || "";
+            });
+
+            document.querySelectorAll("[data-t-placeholder]").forEach(el => {
+                el.placeholder = t[el.getAttribute("data-t-placeholder")] || "";
+            });
+        }
+
+        applyLang();
+
+        /* =========================
+           LOGIC
+        ========================= */
+        const servers = new Map(); // serverName -> color
+        const serverSwitch = document.getElementById("serverSwitch");
+        const logBody = document.getElementById("logBody");
+        const filterSummary = document.getElementById("filterSummary");
+
+        const selectAllCheckbox = document.getElementById("selectAllCheckbox");
+        const btnDeleteSelected = document.getElementById("btnDeleteSelected");
+        const btnClearAll = document.getElementById("btnClearAll");
+
+        const toggleAutoScroll = document.getElementById("toggleAutoScroll");
+        const toggleAutoClear = document.getElementById("toggleAutoClear");
+
+        let activeServer = "all";
+        let searchQuery = "";
+        let autoScroll = true;
+        let autoClear = false;
+
+        function createServerPill(serverName, serverColor) {
+            if (servers.has(serverName)) return;
+
+            servers.set(serverName, serverColor);
+
+            const pill = document.createElement("button");
+            pill.className = "server-pill";
+            pill.dataset.server = serverName;
+            pill.textContent = serverName;
+            pill.style.setProperty("--pill-color", serverColor);
+
+            serverSwitch.appendChild(pill);
+        }
+
+        function setActiveServer(server) {
+            activeServer = server;
+
+            // Update active class
+            document
+                .querySelectorAll(".server-pill")
+                .forEach(p => p.classList.toggle("active", p.dataset.server === server));
+
+            // Update summary
+            filterSummary.textContent =
+                server === "all" ? "Showing: All Servers" : `Showing: ${server}`;
+
+            // Apply filters
+            applyFilters();
+        }
+
+        function applyFilters() {
+            const rows = document.querySelectorAll(".log-row");
+            const q = searchQuery.toLowerCase();
+
+            rows.forEach(row => {
+                const rowServer = row.dataset.server;
+                const matchesServer = activeServer === "all" || rowServer === activeServer;
+                const text = row.innerText.toLowerCase();
+                const matchesSearch = !q || text.includes(q);
+
+                row.style.display = matchesServer && matchesSearch ? "" : "none";
+            });
+        }
+
+        // Event: server pills
+        serverSwitch.addEventListener("click", e => {
+            const pill = e.target.closest(".server-pill");
+            if (!pill) return;
+            setActiveServer(pill.dataset.server);
+        });
+
+        // Event: search
+        document.getElementById("searchInput").addEventListener("input", e => {
+            searchQuery = e.target.value || "";
+            applyFilters();
+        });
+
+        // Toggles
+        toggleAutoScroll.addEventListener("change", e => {
+            autoScroll = e.target.checked;
+        });
+
+        toggleAutoClear.addEventListener("change", e => {
+            autoClear = e.target.checked;
+        });
+
+        // Select all checkbox
+        selectAllCheckbox.addEventListener("change", e => {
+            const checked = e.target.checked;
+            document.querySelectorAll(".row-checkbox").forEach(cb => {
+                cb.checked = checked;
+            });
+        });
+
+        // Delete selected
+        btnDeleteSelected.addEventListener("click", () => {
+            document.querySelectorAll(".row-checkbox:checked").forEach(cb => {
+                const row = cb.closest(".log-row");
+                if (row) row.remove();
+            });
+            selectAllCheckbox.checked = false;
+        });
+
+        // Clear all
+        btnClearAll.addEventListener("click", () => {
+            logBody.innerHTML = "";
+            selectAllCheckbox.checked = false;
+        });
+
+        /* =========================
+           ADD CONNECTION LOG
+           iconBase64, connectionStr, clientName, addressStr, timeStr, serverName, serverColor
+        ========================= */
+        function addConnectionLog(iconBase64, connectionStr, clientName, addressStr, timeStr, serverName, serverColor) {
+            createServerPill(serverName, serverColor);
+
+            // Auto clear when we already have 50 logs (if enabled)
+            if (autoClear && logBody.children.length >= 50) {
+                logBody.innerHTML = "";
+                selectAllCheckbox.checked = false;
+            }
+
+            const row = document.createElement("div");
+            row.className = "log-row";
+            row.dataset.server = serverName;
+
+            row.innerHTML = `
+                      <div class="log-select">
+                        <input type="checkbox" class="row-checkbox checkbox-sm">
+                        <img class="log-icon" src="data:image/png;base64,${iconBase64}" alt="" />
+                      </div>
+                      <div class="conn-main">
+                        <div class="conn-string" title="${connectionStr}">${connectionStr}</div>
+                        <div class="conn-meta">
+                          <span class="pill-mini">${serverName}</span>
+                        </div>
+                      </div>
+                      <div class="client-cell" title="${clientName}">${clientName}</div>
+                      <div class="addr-cell" title="${addressStr}">${addressStr}</div>
+                      <div class="time-cell">${timeStr}</div>
+                    `;
+
+            // newest appended at bottom
+            logBody.appendChild(row);
+
+            // If auto scroll is on, keep the list pinned to the bottom
+            if (autoScroll) {
+                logBody.scrollTop = logBody.scrollHeight;
+            }
+
+            applyFilters();
+        }
+
+        window.addEventListener("contextmenu", function (e) {
+            e.preventDefault(); // Disable right-click
+        });
+
+    </script>
+</body>
+
+</html>
